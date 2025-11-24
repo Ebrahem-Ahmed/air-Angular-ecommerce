@@ -1,0 +1,41 @@
+.breadcrumb {
+      font-size: 0.9rem;
+    }
+    
+    .breadcrumb-item + .breadcrumb-item::before {
+      content: "/";
+      color: #6c757d;
+    }
+    
+    .card {
+      transition: box-shadow 0.2s ease-in-out;
+    }
+    
+    .card:hover {
+      box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    .btn-outline-dark:hover {
+      background-color: #212529;
+      border-color: #212529;
+    }
+    
+    .btn-link {
+      font-size: 0.9rem;
+      letter-spacing: 0.5px;
+    }
+    
+    .btn-link:hover {
+      text-decoration: underline !important;
+    }
+    
+    @media (max-width: 768px) {
+      .card-body .row {
+        flex-direction: column;
+      }
+      
+      .col-md-3.border-start {
+        border-start: none !important;
+        border-top: 1px solid #dee2e6 !important;
+      }
+    }

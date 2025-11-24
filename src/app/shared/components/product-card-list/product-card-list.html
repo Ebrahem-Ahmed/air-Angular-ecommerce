@@ -1,0 +1,285 @@
+<div class="product-card-list" [attr.data-view]="currentView()">
+  <!-- Header Section -->
+  @if (showHeader()) {
+  <header class="product-list-header mb-4 pb-3 border-bottom">
+    <div class="row align-items-center">
+      <div class="col-md-6">
+        @if (title()) {
+        <h1
+          class="product-list-title h2 fw-bold text-dark text-uppercase mb-2 mb-md-0"
+        >
+          {{ title() }}
+        </h1>
+        } @if (subtitle()) {
+        <p class="product-list-subtitle text-muted mb-2 mb-md-0">
+          {{ subtitle() }}
+        </p>
+        }
+      </div>
+      <div class="col-md-6">
+        <div
+          class="d-flex justify-content-md-end justify-content-center gap-3 flex-wrap"
+        >
+          <!-- Results Count -->
+          @if (showResultsCount() && !isLoading()) {
+          <div class="results-count align-self-center">
+            <span class="text-muted small">
+              {{ totalResults() }} Result{{ totalResults() !== 1 ? "s" : "" }}
+            </span>
+          </div>
+          }
+
+          <!-- View Toggle -->
+          @if (config().enableViewToggle) {
+          <div class="view-toggle btn-group btn-group-sm" role="group">
+            <input
+              type="radio"
+              class="btn-check"
+              id="view-grid"
+              [checked]="currentView() === 'grid'"
+              (change)="setView('grid')"
+            />
+            <label class="btn btn-outline-dark" for="view-grid">
+              <i class="bi bi-grid-3x3-gap"></i>
+            </label>
+
+            <input
+              type="radio"
+              class="btn-check"
+              id="view-list"
+              [checked]="currentView() === 'list'"
+              (change)="setView('list')"
+            />
+            <label class="btn btn-outline-dark" for="view-list">
+              <i class="bi bi-list"></i>
+            </label>
+          </div>
+          }
+
+          <!-- Sort Dropdown -->
+          @if (config().enableSorting) {
+          <div class="sort-dropdown">
+            <select
+              class="form-select form-select-sm fw-medium"
+              [value]="currentSort()"
+              (change)="onSortChange($event)"
+              style="min-width: 180px"
+            >
+              <option value="popularity">Most Popular</option>
+              <option value="newest">Newest First</option>
+              <option value="price-asc">Price: Low to High</option>
+              <option value="price-desc">Price: High to Low</option>
+              <option value="rating">Highest Rated</option>
+              <option value="name">Name A-Z</option>
+            </select>
+          </div>
+          }
+        </div>
+      </div>
+    </div>
+  </header>
+  }
+
+  <!-- Filters Section -->
+  @if (config().enableFilters && filterOptions().length > 0) {
+  <div
+    class="filters-section mb-4"
+    [@slideDown]="showFilters() ? 'visible' : 'hidden'"
+  >
+    <div class="row g-3">
+      @for (filter of filterOptions(); track filter.key) {
+      <div class="col-md-3 col-sm-6">
+        <label class="form-label small fw-semibold text-uppercase">
+          {{ filter.label }}
+        </label>
+        <select
+          class="form-select form-select-sm"
+          [value]="getFilterValue(filter.key)"
+          (change)="onFilterChange(filter.key, $event)"
+        >
+          <option value="">All {{ filter.label }}</option>
+          @for (option of filter.values; track option.value) {
+          <option [value]="option.value">
+            {{ option.label }}
+            @if (option.count !== undefined) { ({{ option.count }}) }
+          </option>
+          }
+        </select>
+      </div>
+      }
+    </div>
+
+    <!-- Active Filters -->
+    @if (hasActiveFilters()) {
+    <div class="active-filters mt-3">
+      <div class="d-flex flex-wrap gap-2 align-items-center">
+        <span class="text-muted small fw-medium">Active filters:</span>
+        @for (filter of getActiveFilters(); track filter.key + filter.value) {
+        <span class="badge bg-dark text-white d-flex align-items-center gap-2">
+          {{ filter.label }}: {{ filter.displayValue }}
+          <button
+            class="btn-close btn-close-white"
+            style="font-size: 0.5rem"
+            (click)="removeFilter(filter.key)"
+            aria-label="Remove filter"
+          ></button>
+        </span>
+        }
+        <button
+          class="btn btn-link btn-sm text-decoration-none p-0"
+          (click)="clearAllFilters()"
+        >
+          Clear all
+        </button>
+      </div>
+    </div>
+    }
+  </div>
+  }
+
+  <!-- Search Section -->
+  @if (showSearch()) {
+  <div class="search-section mb-4">
+    <div class="row">
+      <div class="col-lg-6">
+        <div class="input-group">
+          <span class="input-group-text bg-white border-end-0">
+            <i class="bi bi-search text-muted"></i>
+          </span>
+          <input
+            #searchInput
+            type="text"
+            class="form-control border-start-0 ps-0"
+            placeholder="Search products..."
+            [value]="searchQuery()"
+            (input)="onSearchInput($event)"
+          />
+          @if (searchQuery()) {
+          <button
+            class="btn btn-outline-secondary"
+            (click)="clearSearch()"
+            type="button"
+          >
+            <i class="bi bi-x"></i>
+          </button>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+  }
+
+  <!-- Products Section -->
+  <div class="products-section">
+    <!-- Loading State -->
+    @if (isLoading()) {
+    <div class="loading-grid" [@staggerAnimation]>
+      <div class="row g-3">
+        @for (item of skeletonItems(); track $index) {
+        <div [class]="getColumnClasses()">
+          <app-product-card [loading]="true"></app-product-card>
+        </div>
+        }
+      </div>
+    </div>
+    }
+
+    <!-- Products Grid/List -->
+    @if (!isLoading() && products().length > 0) {
+    <div
+      class="products-container"
+      [@staggerAnimation]
+      [class.products-list-view]="currentView() === 'list'"
+    >
+      <div class="row g-3">
+        @for (product of products(); track product.id; let i = $index) {
+        <div
+          [class]="getColumnClasses()"
+          [@itemAnimation]
+          [style.animation-delay]="getAnimationDelay(i)"
+        >
+          <app-product-card
+            [productData]="product"
+            [wishlistStatus]="isInWishlist(product.id)"
+            [configuration]="getCardConfig()"
+            (productEvent)="onProductEvent($event)"
+          ></app-product-card>
+        </div>
+        }
+      </div>
+    </div>
+    }
+
+    <!-- Empty State -->
+    @if (!isLoading() && products().length === 0) {
+    <div class="empty-state text-center py-5" [@fadeIn]>
+      <div class="empty-state-content">
+        <div class="empty-icon mb-4">
+          <i class="bi bi-search display-1 text-muted"></i>
+        </div>
+        <h3 class="h4 fw-bold text-dark mb-3">
+          {{
+            searchQuery()
+              ? 'No products found for "' + searchQuery() + '"'
+              : "No products found"
+          }}
+        </h3>
+        <p class="text-muted mb-4 lead">
+          {{
+            searchQuery()
+              ? "Try adjusting your search terms or filters to find what you're looking for."
+              : "Check back later for new arrivals and amazing deals."
+          }}
+        </p>
+        @if (searchQuery() || hasActiveFilters()) {
+        <div class="d-flex justify-content-center gap-3">
+          @if (searchQuery()) {
+          <button class="btn btn-outline-dark" (click)="clearSearch()">
+            Clear Search
+          </button>
+          } @if (hasActiveFilters()) {
+          <button class="btn btn-dark" (click)="clearAllFilters()">
+            Clear Filters
+          </button>
+          }
+        </div>
+        }
+      </div>
+    </div>
+    }
+
+    <!-- Load More / Infinite Scroll -->
+    @if (showLoadMore() && !isLoading() && products().length > 0) {
+    <div class="load-more-section text-center mt-5 pt-4 border-top">
+      @if (config().enableInfiniteScroll) {
+      <div
+        #loadMoreTrigger
+        class="infinite-scroll-trigger"
+        style="height: 1px"
+      ></div>
+      @if (isLoadingMore()) {
+      <div class="d-flex justify-content-center align-items-center py-4">
+        <div class="spinner-border me-3" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <span class="text-muted">Loading more products...</span>
+      </div>
+      } } @else {
+      <button
+        class="btn btn-dark btn-lg px-5 py-3 fw-semibold text-uppercase"
+        (click)="onLoadMore()"
+        [disabled]="isLoadingMore()"
+        style="letter-spacing: 1px"
+      >
+        @if (isLoadingMore()) {
+        <span
+          class="spinner-border spinner-border-sm me-2"
+          role="status"
+        ></span>
+        Loading... } @else { Load More Products }
+      </button>
+      }
+    </div>
+    }
+  </div>
+</div>

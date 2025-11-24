@@ -1,0 +1,165 @@
+ <div class="container mt-4">
+      <!-- Header -->
+      <div class="row mb-4">
+        <div class="col-12">
+          <h2 class="fw-bold text-dark">ORDER DETAILS</h2>
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a href="#" class="text-decoration-none">Home</a></li>
+              <li class="breadcrumb-item"><a href="#" class="text-decoration-none">My Account</a></li>
+              <li class="breadcrumb-item active" aria-current="page">Order History</li>
+            </ol>
+          </nav>
+        </div>
+      </div>
+
+      <!-- Order Information Card -->
+      <div class="row mb-4">
+        <div class="col-12">
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <strong>Order Number:</strong>
+                    <span class="ms-2">{{ orderDetails.orderNumber }}</span>
+                  </div>
+                  <div class="mb-3">
+                    <strong>Order Date:</strong>
+                    <span class="ms-2">{{ orderDetails.orderDate }}</span>
+                  </div>
+                  <div class="mb-3">
+                    <strong>Shipped Address:</strong>
+                    <div class="ms-2">
+                      <div>{{ orderDetails.shippedAddress.name }}</div>
+                      <div>{{ orderDetails.shippedAddress.street }}</div>
+                      <div>{{ orderDetails.shippedAddress.city }}, {{ orderDetails.shippedAddress.country }}</div>
+                      <div>{{ orderDetails.shippedAddress.phone }}</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <strong>Shipped Method:</strong>
+                    <span class="ms-2">{{ orderDetails.shippedMethod }}</span>
+                  </div>
+                  <div class="mb-3">
+                    <strong>Billing Address:</strong>
+                    <div class="ms-2">
+                      <div>{{ orderDetails.billingAddress.name }}</div>
+                      <div>{{ orderDetails.billingAddress.street }}</div>
+                      <div>{{ orderDetails.billingAddress.city }}, {{ orderDetails.billingAddress.country }}</div>
+                      <div>{{ orderDetails.billingAddress.email }}</div>
+                      <div>{{ orderDetails.billingAddress.phone }}</div>
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <strong>Payment Method:</strong>
+                    <span class="ms-2">{{ orderDetails.paymentMethod }}</span>
+                  </div>
+                  <div class="mb-0">
+                    <strong>Order Status:</strong>
+                    <span class="ms-2 badge bg-success">{{ orderDetails.orderStatus }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Order Items -->
+      <div class="row mb-4">
+        <div class="col-12">
+          <div class="card shadow-sm">
+            <div class="card-header bg-light">
+              <div class="row">
+                <div class="col-6">
+                  <strong>ITEMS: {{ orderDetails.items.length }}</strong>
+                </div>
+                <div class="col-6 text-end">
+                  <strong>EGP {{ orderDetails.subTotal.toFixed(2) }}</strong>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div *ngFor="let item of orderDetails.items" class="row align-items-center py-3 border-bottom">
+                <div class="col-md-2 text-center">
+                  <img [src]="item.image" [alt]="item.name" class="img-fluid" style="max-height: 80px;">
+                </div>
+                <div class="col-md-6">
+                  <h6 class="mb-1 fw-bold">{{ item.name }}</h6>
+                  <p class="mb-0 text-muted">Size: {{ item.size }}</p>
+                </div>
+                <div class="col-md-2 text-center">
+                  <span>Quantity: {{ item.quantity }}</span>
+                </div>
+                <div class="col-md-2 text-end">
+                  <strong>EGP {{ item.price.toFixed(2) }}</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Order Summary -->
+      <div class="row mb-4">
+        <div class="col-12">
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <div class="row mb-2">
+                <div class="col-8">
+                  <span>Sub Total:</span>
+                </div>
+                <div class="col-4 text-end">
+                  <span>EGP {{ orderDetails.subTotal.toFixed(2) }}</span>
+                </div>
+              </div>
+              <div class="row mb-2">
+                <div class="col-8">
+                  <span>Shipping:</span>
+                </div>
+                <div class="col-4 text-end">
+                  <span>EGP {{ orderDetails.shipping.toFixed(2) }}</span>
+                </div>
+              </div>
+              <div class="row mb-2">
+                <div class="col-8">
+                  <span>Cash On Delivery Fee:</span>
+                </div>
+                <div class="col-4 text-end">
+                  <span>EGP {{ orderDetails.cashOnDeliveryFee.toFixed(2) }}</span>
+                </div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-8">
+                  <span>Duties, Taxes & Fees:</span>
+                </div>
+                <div class="col-4 text-end">
+                  <span>EGP {{ orderDetails.dutiesTaxesFees.toFixed(2) }}</span>
+                </div>
+              </div>
+              <hr>
+              <div class="row">
+                <div class="col-8">
+                  <strong>Total:</strong>
+                </div>
+                <div class="col-4 text-end">
+                  <strong class="fs-5">EGP {{ orderDetails.total.toFixed(2) }}</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Back Button -->
+      <div class="row mb-5">
+        <div class="col-12 text-center">
+          <button type="button" class="btn btn-outline-secondary btn-lg" (click)="goBackToOrderHistory()">
+            BACK TO ORDER HISTORY
+          </button>
+        </div>
+      </div>
+    </div>

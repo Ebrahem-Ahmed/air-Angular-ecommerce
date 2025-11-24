@@ -1,0 +1,37 @@
+<!-- toast.component.html -->
+<div class="custom-toast-container" [class]="getPositionClass()" *ngIf="isVisible()">
+  <div
+    class="custom-toast"
+    [class]="getToastTypeClass()"
+    (click)="onToastClick()"
+  >
+    <div class="custom-toast-content">
+      <!-- Icon -->
+      <div class="custom-toast-icon">
+        <i [class]="getToastIconClass()"></i>
+      </div>
+
+      <!-- Message -->
+      <div class="custom-toast-message">
+        {{ toast?.message }}
+      </div>
+
+      <!-- Close Button (only show if not persistent or if explicitly needed) -->
+      <button
+        type="button"
+        class="custom-toast-close"
+        (click)="closeToast(); $event.stopPropagation()"
+        aria-label="Close"
+      >
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <!-- Progress bar for non-persistent toasts -->
+    <div
+      *ngIf="!toast?.persistent"
+      class="toast-progress-bar"
+      [style.animation-duration.ms]="toast?.duration || 5000"
+    ></div>
+  </div>
+</div>

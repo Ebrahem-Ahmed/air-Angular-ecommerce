@@ -1,0 +1,25 @@
+
+<div class="size-selector">
+  <div class="size-header">
+    <span class="size-label">Select Size (EU)</span>
+    @if(showSizeChart){
+    <button class="size-chart-link" (click)="onSizeChartClick()">
+      Size Chart
+    </button>
+    }
+  </div>
+
+  <div class="size-grid">
+    @for (size of sizes; track $index) {
+    <button
+      class="size-button"
+      [class.selected]="isSizeSelected(size)"
+      [class.unavailable]="!size.available"
+      [disabled]="!size.available"
+      (click)="onSizeSelect(size)"
+    >
+      {{ size.label }}
+    </button>
+    }
+  </div>
+</div>

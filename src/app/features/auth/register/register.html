@@ -1,0 +1,415 @@
+<div class="min-vh-100 bg-light">
+  <div class="container-fluid">
+    <div class="row container-of-login g-0 flex-column flex-lg-row">
+      <!-- Left Column - Register Form -->
+      <div
+        class="col-12 col-lg-6 col-xl-7 d-flex pt-4 justify-content-center bg-white"
+      >
+        <div class="w-100" style="max-width: 450px">
+          <h1 class="h2 fw-bold mb-4">{{ "REGISTER.TITLE" | translate }}</h1>
+
+          <p class="mb-4">{{ "REGISTER.SIGN_UP_WITH" | translate }}</p>
+
+          <!-- Social Login -->
+          <div class="row g-2 mb-4">
+            <div class="col-12">
+              <button
+                type="button"
+                (click)="onGoogleSignUp()"
+                class="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center rounded-0 border-2 border-black"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" class="me-2">
+                  <path
+                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                    fill="#4285F4"
+                  />
+                  <path
+                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                    fill="#34A853"
+                  />
+                  <path
+                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                    fill="#FBBC05"
+                  />
+                  <path
+                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                    fill="#EA4335"
+                  />
+                </svg>
+                <small class="text-uppercase fw-bold text-black my-2">{{
+                  "REGISTER.GOOGLE" | translate
+                }}</small>
+              </button>
+            </div>
+          </div>
+
+          <div class="text-center mb-4">
+            <span class="">{{ "REGISTER.OR" | translate }}</span>
+          </div>
+
+          <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" novalidate>
+            <!-- Name Section -->
+            <h5 class="fw-bold mb-3">{{ "REGISTER.YOUR_NAME" | translate }}</h5>
+
+            <!-- First Name -->
+            <div class="mb-3">
+              <label for="firstName" class="form-label">
+                {{ "REGISTER.FIRST_NAME" | translate }}
+                <span class="text-danger">*</span>
+              </label>
+              <input
+                type="text"
+                class="form-control form-control-lg"
+                [class.is-invalid]="
+                  registerForm.get('firstName')?.invalid &&
+                  registerForm.get('firstName')?.touched
+                "
+                id="firstName"
+                formControlName="firstName"
+                [placeholder]="'REGISTER.FIRST_NAME_PLACEHOLDER' | translate"
+              />
+              <div
+                class="invalid-feedback"
+                *ngIf="
+                  registerForm.get('firstName')?.invalid &&
+                  registerForm.get('firstName')?.touched
+                "
+              >
+                <small>{{
+                  "REGISTER.VALIDATION.FIRST_NAME_REQUIRED" | translate
+                }}</small>
+              </div>
+            </div>
+
+            <!-- Last Name -->
+            <div class="mb-3">
+              <label for="lastName" class="form-label">
+                {{ "REGISTER.LAST_NAME" | translate }}
+                <span class="text-danger">*</span>
+              </label>
+              <input
+                type="text"
+                class="form-control form-control-lg"
+                [class.is-invalid]="
+                  registerForm.get('lastName')?.invalid &&
+                  registerForm.get('lastName')?.touched
+                "
+                id="lastName"
+                formControlName="lastName"
+                [placeholder]="'REGISTER.LAST_NAME_PLACEHOLDER' | translate"
+              />
+              <div
+                class="invalid-feedback"
+                *ngIf="
+                  registerForm.get('lastName')?.invalid &&
+                  registerForm.get('lastName')?.touched
+                "
+              >
+                <small>{{
+                  "REGISTER.VALIDATION.LAST_NAME_REQUIRED" | translate
+                }}</small>
+              </div>
+            </div>
+
+            <!-- Gender -->
+            <div class="mb-4">
+              <label class="form-label">
+                {{ "REGISTER.GENDER" | translate }}
+                <span class="text-danger">*</span>
+              </label>
+              <div class="d-flex gap-3">
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="gender"
+                    id="male"
+                    value="male"
+                    formControlName="gender"
+                  />
+                  <label class="form-check-label" for="male">{{
+                    "REGISTER.MALE" | translate
+                  }}</label>
+                </div>
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="gender"
+                    id="female"
+                    value="female"
+                    formControlName="gender"
+                  />
+                  <label class="form-check-label" for="female">{{
+                    "REGISTER.FEMALE" | translate
+                  }}</label>
+                </div>
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="gender"
+                    id="other"
+                    value="other"
+                    formControlName="gender"
+                  />
+                  <label class="form-check-label" for="other">{{
+                    "REGISTER.OTHER" | translate
+                  }}</label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Login Details Section -->
+            <h5 class="fw-bold mb-3">
+              {{ "REGISTER.LOGIN_DETAILS" | translate }}
+            </h5>
+
+            <!-- Email -->
+            <div class="mb-3">
+              <label for="email" class="form-label">
+                {{ "REGISTER.EMAIL" | translate }}
+                <span class="text-danger">*</span>
+              </label>
+              <input
+                type="email"
+                class="form-control form-control-lg"
+                [class.is-invalid]="
+                  registerForm.get('email')?.invalid &&
+                  registerForm.get('email')?.touched
+                "
+                id="email"
+                formControlName="email"
+                [placeholder]="'REGISTER.EMAIL_PLACEHOLDER' | translate"
+              />
+              <div
+                class="invalid-feedback"
+                *ngIf="
+                  registerForm.get('email')?.invalid &&
+                  registerForm.get('email')?.touched
+                "
+              >
+                <small
+                  *ngIf="registerForm.get('email')?.errors?.['required']"
+                  >{{ "REGISTER.VALIDATION.EMAIL_REQUIRED" | translate }}</small
+                >
+                <small *ngIf="registerForm.get('email')?.errors?.['email']">{{
+                  "REGISTER.VALIDATION.EMAIL_INVALID" | translate
+                }}</small>
+              </div>
+            </div>
+
+            <!-- Phone Number -->
+            <div class="mb-3">
+              <label for="phone" class="form-label">{{
+                "REGISTER.PHONE_NUMBER" | translate
+              }}</label>
+              <div class="input-group">
+                <select class="form-select" style="max-width: 100px">
+                  <option value="+20">🇪🇬 +2</option>
+                  <option value="+1">🇺🇸 +1</option>
+                  <option value="+44">🇬🇧 +44</option>
+                  <option value="+49">🇩🇪 +49</option>
+                  <option value="+33">🇫🇷 +33</option>
+                </select>
+                <input
+                  type="tel"
+                  class="form-control form-control-lg"
+                  id="phone"
+                  formControlName="phone"
+                  [placeholder]="'REGISTER.PHONE_PLACEHOLDER' | translate"
+                />
+              </div>
+            </div>
+
+            <!-- Password -->
+            <div class="mb-3">
+              <label for="password" class="form-label">
+                {{ "REGISTER.PASSWORD" | translate }}
+                <span class="text-danger">*</span>
+              </label>
+              <div class="position-relative">
+                <input
+                  [type]="showPassword ? 'text' : 'password'"
+                  class="form-control form-control-lg pe-5"
+                  [class.is-invalid]="
+                    registerForm.get('password')?.invalid &&
+                    registerForm.get('password')?.touched
+                  "
+                  id="password"
+                  formControlName="password"
+                  [placeholder]="'REGISTER.PASSWORD_PLACEHOLDER' | translate"
+                />
+                <button
+                  type="button"
+                  class="btn btn-link position-absolute end-0 top-50 translate-middle-y me-2 text-decoration-none text-dark"
+                  (click)="togglePassword()"
+                  style="z-index: 10"
+                >
+                  <small class="text-uppercase fw-bold">{{
+                    showPassword
+                      ? ("REGISTER.HIDE" | translate)
+                      : ("REGISTER.SHOW" | translate)
+                  }}</small>
+                </button>
+              </div>
+              <small class="">
+                {{ "REGISTER.PASSWORD_REQUIREMENTS" | translate }}
+              </small>
+            </div>
+
+            <!-- Age Verification -->
+            <div class="form-check mb-4">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                id="ageVerification"
+                formControlName="ageVerification"
+              />
+              <label class="form-check-label" for="ageVerification">
+                {{ "REGISTER.AGE_VERIFICATION" | translate }}
+                <span class="text-danger">*</span>
+              </label>
+            </div>
+
+            <!-- Register Button -->
+            <button
+              type="submit"
+              class="btn btn-dark fancy-btn btn-lg w-100 text-uppercase fw-bold mb-4 rounded-0"
+              [disabled]="registerForm.invalid"
+            >
+              {{ "REGISTER.REGISTER_BUTTON" | translate }}
+              <svg width="16" height="16" viewBox="0 0 16 16" class="ms-2">
+                <path
+                  d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"
+                  fill="white"
+                />
+              </svg>
+            </button>
+
+            <!-- Terms -->
+            <p class="small mb-4">
+              {{ "REGISTER.TERMS_AGREEMENT" | translate }}
+              <a href="#" class="text-dark text-decoration-underline">{{
+                "REGISTER.ADICLUB_TERMS" | translate
+              }}</a
+              >.
+            </p>
+
+            <!-- Privacy Notice -->
+            <div class="mb-4">
+              <h6 class="fw-bold mb-2">
+                {{ "REGISTER.PRIVACY_NOTICE_TITLE" | translate }}
+              </h6>
+              <p class="small">
+                {{ "REGISTER.PRIVACY_NOTICE_TEXT" | translate }}
+                <a href="#" class="text-dark text-decoration-underline">{{
+                  "REGISTER.PRIVACY_NOTICE_LINK" | translate
+                }}</a>
+                {{ "REGISTER.PRIVACY_NOTICE_CONTINUE" | translate }}
+                <a href="#" class="text-dark text-decoration-underline">{{
+                  "REGISTER.PRIVACY_NOTICE_LINK" | translate
+                }}</a>
+                {{ "REGISTER.PRIVACY_NOTICE_END" | translate }}
+              </p>
+            </div>
+
+            <!-- Email Marketing -->
+            <div class="mb-4">
+              <h6 class="fw-bold mb-2">
+                {{ "REGISTER.EMAIL_MARKETING_TITLE" | translate }}
+              </h6>
+              <p class="small">
+                {{ "REGISTER.EMAIL_MARKETING_TEXT" | translate }}
+                <a href="#" class="text-dark text-decoration-underline">{{
+                  "REGISTER.PRIVACY_NOTICE_LINK" | translate
+                }}</a>
+                {{ "REGISTER.EMAIL_MARKETING_CONTINUE" | translate }}
+              </p>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Right Column - Promotional Content -->
+      <div
+        class="col-12 col-lg-6 col-xl-5 d-flex justify-content-center bg-white"
+      >
+        <div class="">
+          <div class="mb-1">
+            <h2 class="display-6 fw-bold mb-3">
+              {{ "REGISTER.ADICLUB_PROMO_TITLE" | translate }}
+            </h2>
+            <p class="lead mb-1">
+              {{ "REGISTER.ADICLUB_PROMO_DESC" | translate }}
+            </p>
+          </div>
+
+          <div class="row text-start mb-1">
+            <div class="col-12 mb-2">
+              <div class="d-flex align-items-center">
+                <svg width="16" height="16" class="me-3 text-success">
+                  <path
+                    d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"
+                    fill="currentColor"
+                  />
+                </svg>
+                <span>{{ "REGISTER.BENEFITS.VOUCHER" | translate }}</span>
+              </div>
+            </div>
+            <div class="col-12 mb-2">
+              <div class="d-flex align-items-center">
+                <svg width="16" height="16" class="me-3 text-success">
+                  <path
+                    d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"
+                    fill="currentColor"
+                  />
+                </svg>
+                <span>{{ "REGISTER.BENEFITS.MEMBERS_ONLY" | translate }}</span>
+              </div>
+            </div>
+            <div class="col-12 mb-2">
+              <div class="d-flex align-items-center">
+                <svg width="16" height="16" class="me-3 text-success">
+                  <path
+                    d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"
+                    fill="currentColor"
+                  />
+                </svg>
+                <span>{{ "REGISTER.BENEFITS.APPS_ACCESS" | translate }}</span>
+              </div>
+            </div>
+            <div class="col-12 mb-4">
+              <div class="d-flex align-items-center">
+                <svg width="16" height="16" class="me-3 text-success">
+                  <path
+                    d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"
+                    fill="currentColor"
+                  />
+                </svg>
+                <span>{{
+                  "REGISTER.BENEFITS.SPECIAL_OFFERS" | translate
+                }}</span>
+              </div>
+            </div>
+          </div>
+
+          <p class="mb-3">
+            {{ "REGISTER.JOIN_NOW_TEXT" | translate }}
+          </p>
+
+          <!-- Promotional Images -->
+          <div class="row mt-3">
+            <div class="col-12">
+              <img
+                src="/Images/imgi_1_adiclub.jpg"
+                class="img-fluid rounded"
+                [alt]="'LOGIN.ADIDAS_PROMOTION_ALT' | translate"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,917 @@
+<!-- checkout.component.html -->
+<div class="main-container">
+  <!-- Loading Spinner -->
+  <div *ngIf="paymentService.isProcessingPayment" class="loading-overlay">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden"
+        >{{ "FOOTER.CHECKOUT.PROCESSING_PAYMENT" | translate }}...</span
+      >
+    </div>
+    <p class="mt-2">
+      {{ "FOOTER.CHECKOUT.PROCESSING_PAYMENT_DESC" | translate }}
+    </p>
+  </div>
+
+  <!-- Validation Errors -->
+  <div
+    *ngIf="validationErrors.length > 0"
+    class="alert alert-danger"
+    role="alert"
+  >
+    <h6 class="alert-heading">
+      {{ "FOOTER.CHECKOUT.VALIDATION_ERRORS_TITLE" | translate }}
+    </h6>
+    <ul class="mb-0">
+      <li *ngFor="let error of validationErrors">{{ error }}</li>
+    </ul>
+  </div>
+
+  <!-- Order Summary -->
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-12">
+        <div class="order-summary-section p-3">
+          <!-- Header -->
+          <h4 class="fw-bold mb-3 pb-2">
+            {{ "FOOTER.CHECKOUT.ORDER_SUMMARY" | translate }}
+          </h4>
+
+          <!-- Check if cart has items -->
+          <div *ngIf="cartItems.length === 0" class="alert alert-warning">
+            {{ "FOOTER.CHECKOUT.EMPTY_CART_MESSAGE" | translate }}
+          </div>
+
+          <!-- Table -->
+          <div class="table-responsive" *ngIf="cartItems.length > 0">
+            <table class="table align-middle">
+              <thead class="border-bottom">
+                <tr>
+                  <th class="text-start">
+                    {{ "FOOTER.CHECKOUT.PRODUCT" | translate }}
+                  </th>
+                  <th class="text-center">
+                    {{ "FOOTER.CHECKOUT.QUANTITY" | translate }}
+                  </th>
+                  <th class="text-center">
+                    {{ "FOOTER.CHECKOUT.PRICE" | translate }}
+                  </th>
+                  <th class="text-center">
+                    {{ "FOOTER.CHECKOUT.TOTAL" | translate }}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of cartItems">
+                  <!-- Product Info -->
+                  <td class="d-flex align-items-start">
+                    <img
+                      [src]="item.imageUrl || '/assets/images/placeholder.jpg'"
+                      [alt]="item.productName"
+                      class="me-3 img-fluid"
+                      style="width: 120px; height: auto"
+                      onerror="this.src='/assets/images/placeholder.jpg'"
+                    />
+                    <div>
+                      <div class="fw-bold">{{ item.productName }}</div>
+                      <small
+                        >{{ "FOOTER.CHECKOUT.SIZE" | translate }}:
+                        {{ item.size }}</small
+                      ><br />
+                      <small
+                        >{{ "FOOTER.CHECKOUT.COLOR" | translate }}:
+                        {{ item.color }}</small
+                      ><br />
+                      <small
+                        >{{ "FOOTER.CHECKOUT.SKU" | translate }}: {{ item.sku }}</small
+                      >
+                    </div>
+                  </td>
+
+                  <!-- Quantity -->
+                  <td class="text-center">{{ item.quantity }}</td>
+
+                  <!-- Price -->
+                  <td class="text-center">
+                    EGP {{ item.unitPrice | number : "1.2-2" }}
+                  </td>
+
+                  <!-- Total -->
+                  <td class="text-center">
+                    EGP {{ item.totalPrice | number : "1.2-2" }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Items Total -->
+          <div
+            class="d-flex justify-content-end mt-4"
+            *ngIf="cartItems.length > 0"
+          >
+            <div class="text-end">
+              <div class="fw-bold">
+                {{ "FOOTER.CHECKOUT.ITEMS_TOTAL" | translate }}
+              </div>
+              <div class="fw-bold fs-5">
+                EGP {{ cartSummary.subtotal | number : "1.2-2" }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <form (ngSubmit)="onSubmitOrder()" #checkoutForm="ngForm">
+    <!-- Guest Contact Information -->
+    <div class="row g-4" *ngIf="shouldShowGuestForm">
+      <div class="col-12">
+        <div class="section-card p-4">
+          <h3 class="section-title">
+            {{ "FOOTER.CHECKOUT.CONTACT_INFORMATION" | translate }}
+          </h3>
+          <p class="small text-muted mb-3">
+            {{ "FOOTER.CHECKOUT.CONTACT_INFO_DESC" | translate }}
+          </p>
+
+          <div class="row g-3" [formGroup]="formService.guestForm">
+            <div class="col-12">
+              <label class="form-label"
+                >{{ "FOOTER.CHECKOUT.EMAIL_ADDRESS" | translate }} *</label
+              >
+              <input
+                type="email"
+                class="form-control rounded-0"
+                formControlName="email"
+                [placeholder]="'FOOTER.CHECKOUT.EMAIL_PLACEHOLDER' | translate"
+                [class.is-invalid]="
+                  isFieldInvalid(formService.guestForm, 'email')
+                "
+                (blur)="onGuestEmailChange()"
+                (input)="onGuestEmailChange()"
+              />
+              <div
+                class="invalid-feedback"
+                *ngIf="isFieldInvalid(formService.guestForm, 'email')"
+              >
+                {{ getFieldError(formService.guestForm, "email") }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Billing Address and Delivery Address Row -->
+    <div class="row g-4">
+      <!-- Billing Address -->
+      <div class="col-lg-6">
+        <div class="section-card p-4">
+          <h3 class="section-title">
+            {{ "FOOTER.CHECKOUT.BILLING_ADDRESS" | translate }}
+          </h3>
+
+          <!-- Address Selection if user has addresses -->
+          <div *ngIf="addressService.userAddresses.length > 0" class="mb-3">
+            <label class="form-label">{{
+              "FOOTER.CHECKOUT.SELECT_BILLING_ADDRESS" | translate
+            }}</label>
+            <select
+              class="form-select rounded-0"
+              (change)="onBillingAddressChange($event)"
+            >
+              <option
+                *ngFor="let address of addressService.userAddresses"
+                [value]="address.id"
+                [selected]="
+                  addressService.selectedBillingAddressId === address.id
+                "
+              >
+                {{ addressService.getAddressSummary(address) }}
+              </option>
+              <option value="new">
+                {{ "FOOTER.CHECKOUT.ADD_NEW_ADDRESS" | translate }}
+              </option>
+            </select>
+          </div>
+
+          <!-- Billing Form -->
+          <div
+            class="row g-3"
+            [formGroup]="formService.billingForm"
+            *ngIf="
+              addressService.showNewBillingForm ||
+              addressService.userAddresses.length === 0
+            "
+          >
+            <div class="col-12">
+              <label class="form-label"
+                >{{ "FOOTER.CHECKOUT.FIRST_NAME" | translate }} *</label
+              >
+              <input
+                type="text"
+                class="form-control rounded-0"
+                formControlName="firstName"
+                [class.is-invalid]="
+                  isFieldInvalid(formService.billingForm, 'firstName')
+                "
+              />
+              <div
+                class="invalid-feedback"
+                *ngIf="isFieldInvalid(formService.billingForm, 'firstName')"
+              >
+                {{ getFieldError(formService.billingForm, "firstName") }}
+              </div>
+            </div>
+            <div class="col-12">
+              <label class="form-label"
+                >{{ "FOOTER.CHECKOUT.LAST_NAME" | translate }} *</label
+              >
+              <input
+                type="text"
+                class="form-control rounded-0"
+                formControlName="lastName"
+                [class.is-invalid]="
+                  isFieldInvalid(formService.billingForm, 'lastName')
+                "
+              />
+              <div
+                class="invalid-feedback"
+                *ngIf="isFieldInvalid(formService.billingForm, 'lastName')"
+              >
+                {{ getFieldError(formService.billingForm, "lastName") }}
+              </div>
+            </div>
+            <div class="col-12">
+              <label class="form-label"
+                >{{ "FOOTER.CHECKOUT.EMAIL" | translate }} *</label
+              >
+              <input
+                type="email"
+                class="form-control rounded-0"
+                formControlName="email"
+                [class.is-invalid]="
+                  isFieldInvalid(formService.billingForm, 'email')
+                "
+                (blur)="onGuestEmailChange()"
+                (input)="onGuestEmailChange()"
+                [readonly]="isGuestUser"
+              />
+              <div
+                class="invalid-feedback"
+                *ngIf="isFieldInvalid(formService.billingForm, 'email')"
+              >
+                {{ getFieldError(formService.billingForm, "email") }}
+              </div>
+              <small class="form-text text-muted" *ngIf="isGuestUser">
+                {{ "FOOTER.CHECKOUT.EMAIL_MANAGED_ABOVE" | translate }}
+              </small>
+            </div>
+            <div class="col-12">
+              <label class="form-label"
+                >{{ "FOOTER.CHECKOUT.COUNTRY" | translate }} *</label
+              >
+              <select
+                class="form-select rounded-0"
+                formControlName="country"
+                [class.is-invalid]="
+                  isFieldInvalid(formService.billingForm, 'country')
+                "
+              >
+                <option value="Egypt">Egypt</option>
+                <option value="UAE">UAE</option>
+                <option value="Saudi Arabia">Saudi Arabia</option>
+              </select>
+              <div
+                class="invalid-feedback"
+                *ngIf="isFieldInvalid(formService.billingForm, 'country')"
+              >
+                {{ getFieldError(formService.billingForm, "country") }}
+              </div>
+            </div>
+            <div class="col-12">
+              <label class="form-label"
+                >{{ "FOOTER.CHECKOUT.ADDRESS_LINE1" | translate }} *</label
+              >
+              <input
+                type="text"
+                class="form-control rounded-0"
+                [placeholder]="'FOOTER.CHECKOUT.HOUSE_NUMBER_STREET' | translate"
+                formControlName="addressLine1"
+                [class.is-invalid]="
+                  isFieldInvalid(formService.billingForm, 'addressLine1')
+                "
+              />
+              <div
+                class="invalid-feedback"
+                *ngIf="isFieldInvalid(formService.billingForm, 'addressLine1')"
+              >
+                {{ getFieldError(formService.billingForm, "addressLine1") }}
+              </div>
+            </div>
+            <div class="col-12">
+              <label class="form-label">{{
+                "FOOTER.CHECKOUT.ADDRESS_LINE2" | translate
+              }}</label>
+              <input
+                type="text"
+                class="form-control rounded-0"
+                [placeholder]="'FOOTER.CHECKOUT.ZONE_APARTMENT_SUITE' | translate"
+                formControlName="addressLine2"
+              />
+            </div>
+            <div class="col-12">
+              <label class="form-label"
+                >{{ "FOOTER.CHECKOUT.CITY" | translate }} *</label
+              >
+              <input
+                type="text"
+                class="form-control rounded-0"
+                [placeholder]="'FOOTER.CHECKOUT.ENTER_YOUR_CITY' | translate"
+                formControlName="city"
+                [class.is-invalid]="
+                  isFieldInvalid(formService.billingForm, 'city')
+                "
+              />
+              <div
+                class="invalid-feedback"
+                *ngIf="isFieldInvalid(formService.billingForm, 'city')"
+              >
+                {{ getFieldError(formService.billingForm, "city") }}
+              </div>
+            </div>
+            <div class="col-12">
+              <label class="form-label">{{
+                "FOOTER.CHECKOUT.ZIP" | translate
+              }}</label>
+              <input
+                type="text"
+                class="form-control rounded-0"
+                formControlName="zipCode"
+              />
+            </div>
+            <div class="col-12">
+              <label class="form-label"
+                >{{ "FOOTER.CHECKOUT.MOBILE_PHONE" | translate }} *</label
+              >
+              <div class="input-group">
+                <select class="form-select rounded-0" style="max-width: 80px">
+                  <option value="+20">+20</option>
+                  <option value="+971">+971</option>
+                  <option value="+966">+966</option>
+                </select>
+                <input
+                  type="tel"
+                  class="form-control rounded-0"
+                  formControlName="phone"
+                  [class.is-invalid]="
+                    isFieldInvalid(formService.billingForm, 'phone')
+                  "
+                />
+              </div>
+              <div
+                class="invalid-feedback"
+                *ngIf="isFieldInvalid(formService.billingForm, 'phone')"
+              >
+                {{ getFieldError(formService.billingForm, "phone") }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Delivery Address -->
+      <div class="col-lg-6">
+        <div class="section-card p-4">
+          <h3 class="section-title">
+            {{ "FOOTER.CHECKOUT.DELIVERY_ADDRESS" | translate }}
+          </h3>
+          <div class="form-check mb-3">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="deliveryOption"
+              id="sameAddress"
+              [checked]="sameAsBilling"
+              (change)="onSameAsBillingChange($event)"
+            />
+            <label class="form-check-label" for="sameAddress">
+              {{ "FOOTER.CHECKOUT.DEFAULT_SAME" | translate }}
+            </label>
+          </div>
+          <div class="form-check mb-3">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="deliveryOption"
+              id="altAddress"
+              [checked]="!sameAsBilling"
+              (change)="onSameAsBillingChange({ target: { checked: false } })"
+            />
+            <label class="form-check-label" for="altAddress">
+              {{ "FOOTER.CHECKOUT.ALT_ADDRESS" | translate }}
+            </label>
+          </div>
+
+          <!-- Alternative Shipping Address Form -->
+          <div *ngIf="!sameAsBilling">
+            <!-- Address Selection if user has addresses -->
+            <div *ngIf="addressService.userAddresses.length > 0" class="mb-3">
+              <label class="form-label">{{
+                "FOOTER.CHECKOUT.SELECT_SHIPPING_ADDRESS" | translate
+              }}</label>
+              <select
+                class="form-select rounded-0"
+                (change)="onShippingAddressChange($event)"
+              >
+                <option
+                  *ngFor="let address of addressService.userAddresses"
+                  [value]="address.id"
+                  [selected]="
+                    addressService.selectedShippingAddressId === address.id
+                  "
+                >
+                  {{ addressService.getAddressSummary(address) }}
+                </option>
+                <option value="new">
+                  {{ "FOOTER.CHECKOUT.ADD_NEW_ADDRESS" | translate }}
+                </option>
+              </select>
+            </div>
+
+            <div
+              class="row g-3 mt-2"
+              [formGroup]="formService.shippingForm"
+              *ngIf="
+                addressService.showNewShippingForm ||
+                (addressService.userAddresses.length === 0 && !sameAsBilling)
+              "
+            >
+              <div class="col-12">
+                <label class="form-label"
+                  >{{ "FOOTER.CHECKOUT.RECIPIENT_NAME" | translate }} *</label
+                >
+                <input
+                  type="text"
+                  class="form-control rounded-0"
+                  formControlName="recipientName"
+                  [class.is-invalid]="
+                    isFieldInvalid(formService.shippingForm, 'recipientName')
+                  "
+                />
+                <div
+                  class="invalid-feedback"
+                  *ngIf="
+                    isFieldInvalid(formService.shippingForm, 'recipientName')
+                  "
+                >
+                  {{ getFieldError(formService.shippingForm, "recipientName") }}
+                </div>
+              </div>
+              <div class="col-12">
+                <label class="form-label"
+                  >{{ "FOOTER.CHECKOUT.ADDRESS_LINE1" | translate }} *</label
+                >
+                <input
+                  type="text"
+                  class="form-control rounded-0"
+                  formControlName="line1"
+                  [class.is-invalid]="
+                    isFieldInvalid(formService.shippingForm, 'line1')
+                  "
+                />
+                <div
+                  class="invalid-feedback"
+                  *ngIf="isFieldInvalid(formService.shippingForm, 'line1')"
+                >
+                  {{ getFieldError(formService.shippingForm, "line1") }}
+                </div>
+              </div>
+              <div class="col-12">
+                <label class="form-label">{{
+                  "FOOTER.CHECKOUT.ADDRESS_LINE2" | translate
+                }}</label>
+                <input
+                  type="text"
+                  class="form-control rounded-0"
+                  formControlName="line2"
+                />
+              </div>
+
+              <div class="col-12">
+                <label class="form-label"
+                  >{{ "FOOTER.CHECKOUT.CITY" | translate }} *</label
+                >
+                <input
+                  type="text"
+                  class="form-control rounded-0"
+                  formControlName="city"
+                  [class.is-invalid]="
+                    isFieldInvalid(formService.shippingForm, 'city')
+                  "
+                />
+                <div
+                  class="invalid-feedback"
+                  *ngIf="isFieldInvalid(formService.shippingForm, 'city')"
+                >
+                  {{ getFieldError(formService.shippingForm, "city") }}
+                </div>
+              </div>
+              <div class="col-12">
+                <label class="form-label"
+                  >{{ "FOOTER.CHECKOUT.ZIP" | translate }} *</label
+                >
+                <input
+                  type="text"
+                  class="form-control rounded-0"
+                  formControlName="postalCode"
+                  [class.is-invalid]="
+                    isFieldInvalid(formService.shippingForm, 'postalCode')
+                  "
+                />
+                <div
+                  class="invalid-feedback"
+                  *ngIf="isFieldInvalid(formService.shippingForm, 'postalCode')"
+                >
+                  {{ getFieldError(formService.shippingForm, "postalCode") }}
+                </div>
+              </div>
+              <div class="col-12">
+                <label class="form-label">{{
+                  "FOOTER.CHECKOUT.MOBILE_PHONE" | translate
+                }}</label>
+                <input
+                  type="tel"
+                  class="form-control rounded-0"
+                  formControlName="phone"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Shipping Method - Full Width -->
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="section-card p-4">
+          <h3 class="section-title">
+            {{ "FOOTER.CHECKOUT.SHIPPING_METHOD" | translate }}
+          </h3>
+          <div class="form-check mb-3">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="shipping"
+              id="freeShipping"
+              value="free"
+              checked
+            />
+            <label
+              class="form-check-label d-flex justify-content-between w-100"
+              for="freeShipping"
+            >
+              <div>
+                <strong>{{
+                  "FOOTER.CHECKOUT.FREE_SHIPPING" | translate
+                }}</strong
+                ><br />
+                <small class="text-muted">{{
+                  "FOOTER.CHECKOUT.STANDARD_SHIPPING" | translate
+                }}</small>
+              </div>
+            </label>
+          </div>
+          <div
+            class="alert alert-info"
+            style="background-color: #e7f3ff; border-color: #b3d9ff"
+          >
+            <small>
+              <strong>{{ "FOOTER.CHECKOUT.EARN_REWARDS" | translate }}</strong
+              ><br />
+              <strong>{{
+                "FOOTER.CHECKOUT.FASTER_DELIVERY" | translate
+              }}</strong>
+            </small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Payment and Billing Summary Row -->
+    <div class="row g-4">
+      <!-- Payment Section -->
+      <div class="col-lg-6">
+        <div class="section-card p-4">
+          <h3 class="section-title">
+            {{ "FOOTER.CHECKOUT.PAYMENT" | translate }}
+          </h3>
+          <p class="small text-muted mb-3">
+            {{ "FOOTER.CHECKOUT.PAYMENT_DESC" | translate }}
+          </p>
+
+          <div class="payment-methods">
+            <!-- PayPal Option -->
+            <div
+              class="payment-option rounded-0 mb-3"
+              [class.selected]="isPayPalSelected"
+              (click)="onPaymentMethodChange(PaymentMethod.PayPal)"
+            >
+              <input
+                type="radio"
+                class="form-check-input me-2"
+                name="paymentMethod"
+                [value]="PaymentMethod.PayPal"
+                [checked]="isPayPalSelected"
+              />
+              <div class="img-fluid">
+                <img
+                  src="/Icons/Paypal_2014_logo.png"
+                  class="payment-logo"
+                  alt="PayPal"
+                />
+              </div>
+            </div>
+
+            <!-- Cash on Delivery Option -->
+            <div
+              class="payment-option rounded-0 mb-3"
+              [class.selected]="isCODSelected"
+              (click)="onPaymentMethodChange(PaymentMethod.CashOnDelivery)"
+            >
+              <input
+                type="radio"
+                class="form-check-input me-2"
+                name="paymentMethod"
+                [value]="PaymentMethod.CashOnDelivery"
+                [checked]="isCODSelected"
+              />
+              <div class="container">
+                <div class="small fw-bold">
+                  {{ "FOOTER.CHECKOUT.CASH_ON_DELIVERY" | translate }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="small text-muted my-3">
+            {{ "FOOTER.CHECKOUT.AGREEMENT" | translate }}
+          </div>
+
+          <button
+            type="submit"
+            class="btn btn-primary-custom rounded-0 w-100"
+            [disabled]="
+              paymentService.isProcessingPayment || cartItems.length === 0
+            "
+          >
+            <span *ngIf="!paymentService.isProcessingPayment">
+              {{ "FOOTER.CHECKOUT.PAY_PLACE_ORDER" | translate }}
+              <i class="fas fa-arrow-right ms-2"></i>
+            </span>
+            <span *ngIf="paymentService.isProcessingPayment">
+              <div class="spinner-border spinner-border-sm me-2" role="status">
+                <span class="visually-hidden"
+                  >{{ "COMMON.LOADING" | translate }}...</span
+                >
+              </div>
+              {{ "FOOTER.CHECKOUT.PROCESSING" | translate }}
+            </span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Billing Summary -->
+      <div class="col-lg-6">
+        <div class="section-card p-4 billing-summary">
+          <h3 class="section-title">
+            {{ "FOOTER.CHECKOUT.BILLING_SUMMARY" | translate }}
+          </h3>
+
+          <div class="promo-section">
+            <!-- Collapsible Header -->
+            <div
+              class="d-flex justify-content-between align-items-center rounded-0 cursor-pointer"
+              (click)="onTogglePromoSection()"
+            >
+              <span class="small fw-semibold rounded-0">{{
+                "FOOTER.CHECKOUT.PROMO_CODE" | translate
+              }}</span>
+              <i
+                class="fas"
+                [class.fa-chevron-down]="!couponService.showPromoSection"
+                [class.fa-chevron-up]="couponService.showPromoSection"
+              ></i>
+            </div>
+
+            <!-- Collapsible Content -->
+            <div class="mt-3" *ngIf="couponService.showPromoSection">
+              <div class="input-group">
+                <input
+                  type="text"
+                  class="form-control rounded-0"
+                  [placeholder]="'FOOTER.CHECKOUT.ENTER_PROMO_CODE' | translate"
+                  [(ngModel)]="couponService.promoCode"
+                  name="promoCode"
+                  [disabled]="couponService.isApplyingCoupon"
+                  maxlength="20"
+                />
+                <button
+                  class="btn btn-outline-primary rounded-0"
+                  type="button"
+                  (click)="onApplyCoupon()"
+                  [disabled]="
+                    !couponService.promoCode ||
+                    couponService.isApplyingCoupon ||
+                    !couponService.promoCode.trim()
+                  "
+                >
+                  <span *ngIf="!couponService.isApplyingCoupon">{{
+                    "FOOTER.CHECKOUT.APPLY" | translate
+                  }}</span>
+                  <span *ngIf="couponService.isApplyingCoupon">
+                    <div class="spinner-border spinner-border-sm" role="status">
+                      <span class="visually-hidden"
+                        >{{ "COMMON.LOADING" | translate }}...</span
+                      >
+                    </div>
+                  </span>
+                </button>
+              </div>
+
+              <!-- Success Message with Immediate Feedback -->
+              <div
+                *ngIf="
+                  couponService.couponApplied &&
+                  couponService.getCalculatedDiscount() > 0
+                "
+                class="alert alert-success mt-2 small py-2"
+              >
+                <i class="fas fa-check-circle me-1"></i>
+                {{ "FOOTER.CHECKOUT.COUPON_APPLIED_SUCCESS" | translate }}
+                {{ couponService.getCalculatedDiscount() | number : "1.2-2" }}
+                <button
+                  type="button"
+                  class="btn-close btn-sm ms-2"
+                  (click)="onRemoveCoupon()"
+                  aria-label="Remove coupon"
+                ></button>
+              </div>
+
+              <!-- Error Message -->
+              <div
+                *ngIf="couponService.couponError"
+                class="alert alert-danger mt-2 small py-2"
+              >
+                <i class="fas fa-exclamation-circle me-1"></i>
+                {{ couponService.couponError }}
+              </div>
+
+              <!-- Info Message -->
+              <div
+                *ngIf="
+                  !couponService.couponApplied && !couponService.couponError
+                "
+                class="small text-muted mt-2"
+              >
+                {{ "FOOTER.CHECKOUT.COUPON_INFO_TEXT" | translate }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Summary Details with Immediate Coupon Feedback -->
+          <div class="border-top pt-3" *ngIf="cartSummary.itemCount > 0">
+            <!-- Items Total - Always show original cart subtotal -->
+            <div class="d-flex justify-content-between mb-2">
+              <span class="small"
+                >{{ "FOOTER.CHECKOUT.ITEMS_TOTAL" | translate }} ({{
+                  cartSummary.totalItems
+                }}
+                {{ "COMMON.ITEMS" | translate }})</span
+              >
+              <span class="small fw-bold">
+                EGP {{ getDisplaySubtotal() | number : "1.2-2" }}
+              </span>
+            </div>
+
+            <!-- Applied Coupon Discount - Show immediately when calculated -->
+            <div
+              class="d-flex justify-content-between mb-2"
+              *ngIf="couponService.getCalculatedDiscount() > 0"
+            >
+              <span class="small">
+                {{ "FOOTER.CHECKOUT.DISCOUNT" | translate }}
+                <span class="text-muted" *ngIf="couponService.getCouponCode()">
+                  ({{ couponService.getCouponCode() }})
+                </span>
+              </span>
+              <span class="small fw-bold text-success">
+                -EGP
+                {{ couponService.getCalculatedDiscount() | number : "1.2-2" }}
+              </span>
+            </div>
+
+            <!-- Subtotal After Discount -->
+            <div
+              class="d-flex justify-content-between mb-2"
+              *ngIf="couponService.getCalculatedDiscount() > 0"
+            >
+              <span class="small fw-semibold">{{
+                "FOOTER.CHECKOUT.SUBTOTAL_AFTER_DISCOUNT" | translate
+              }}</span>
+              <span class="small fw-semibold">
+                EGP
+                {{
+                  getDisplaySubtotal() - couponService.getCalculatedDiscount()
+                    | number : "1.2-2"
+                }}
+              </span>
+            </div>
+
+            <!-- Shipping -->
+            <div class="d-flex justify-content-between mb-2">
+              <span class="small">{{
+                "FOOTER.CHECKOUT.SHIPPING" | translate
+              }}</span>
+              <span class="small fw-bold">{{
+                "CART.SUMMARY.DELIVERY_FREE" | translate
+              }}</span>
+            </div>
+
+            <!-- Taxes & Fees (calculated on discounted amount) -->
+            <div
+              class="d-flex justify-content-between mb-2"
+              *ngIf="getTaxesAndFees() > 0"
+            >
+              <span class="small">{{ "FOOTER.CHECKOUT.TAXES_FEES" | translate }}</span>
+              <span class="small fw-bold">
+                EGP {{ getTaxesAndFees() | number : "1.2-2" }}
+              </span>
+            </div>
+
+            <!-- COD Fee (if COD payment method selected) -->
+            <div
+              class="d-flex justify-content-between mb-2"
+              *ngIf="isCODSelected"
+            >
+              <span class="small">{{
+                "FOOTER.CHECKOUT.CASH_ON_DELIVERY_FEE" | translate
+              }}</span>
+              <span class="small fw-bold">
+                EGP {{ getCODFee() | number : "1.2-2" }}
+              </span>
+            </div>
+
+            <!-- Final Total with Immediate Coupon Reflection -->
+            <div class="total-section">
+              <div class="d-flex justify-content-between">
+                <span class="fw-bold">{{
+                  "FOOTER.CHECKOUT.TOTAL_FOR_ORDER" | translate
+                }}</span>
+                <span class="fw-bold">
+                  EGP {{ getFinalTotal() | number : "1.2-2" }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Enhanced Savings Summary with Immediate Feedback -->
+            <div
+              class="mt-2 p-2 bg-light rounded"
+              *ngIf="couponService.getCalculatedDiscount() > 0"
+            >
+              <div class="small text-success fw-semibold">
+                <i class="fas fa-tag me-1"></i>
+                {{ "FOOTER.CHECKOUT.SAVINGS_MESSAGE" | translate }}
+                {{ couponService.getCalculatedDiscount() | number : "1.2-2" }}
+                {{ "FOOTER.CHECKOUT.WITH_COUPON" | translate }}
+                {{ couponService.getCouponCode() }}!
+              </div>
+              <div class="small text-muted">
+                {{ "FOOTER.CHECKOUT.ORIGINAL_TOTAL" | translate }}
+                {{ getDisplaySubtotal() | number : "1.2-2" }} →
+                {{ "FOOTER.CHECKOUT.AFTER_DISCOUNT" | translate }}
+                {{ couponService.getCurrentTotal() | number : "1.2-2" }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Empty Cart Message -->
+          <div *ngIf="cartSummary.itemCount === 0" class="text-center py-4">
+            <p class="text-muted">{{ "FOOTER.CHECKOUT.EMPTY_CART" | translate }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+
+</div>
+<!-- Footer -->
+<div class="footer-links mb-5">
+  <div>
+    <a href="#">{{ "FOOTER.CHECKOUT.CONTACT_US_HELP" | translate }}</a>
+    <a href="#">{{ "FOOTER.CHECKOUT.TERMS" | translate }}</a>
+    <a href="#">{{ "FOOTER.CHECKOUT.PRIVACY" | translate }}</a>
+  </div>
+</div>

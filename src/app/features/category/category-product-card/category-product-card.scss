@@ -1,0 +1,90 @@
+.product-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  background: #fff;
+
+  transition: all 0.5s ease;
+  &:hover {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    transform: translateY(-4px);
+  }
+}
+.product-image {
+  position: relative;
+  text-align: center;
+  background: #f8f9fa;
+}
+.product-image img {
+  max-width: 100%;
+  height: auto;
+}
+.discount-badge {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  background: #fff;
+  color: #000;
+  font-size: 0.9rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.wishlist-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  border: none;
+  background: none;
+  font-size: 1.3rem;
+  color: #fff;
+  cursor: pointer;
+
+  &:hover {
+    color: #ff4757;
+  }
+  &.active {
+    color: #ff4757;
+  }
+}
+.addtocart-btn {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: #fff;
+  color: #000;
+  border: none;
+  padding: 6px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.product-price .new-price {
+  color: red;
+  font-weight: 600;
+  margin-right: 8px;
+}
+.product-price .old-price {
+  text-decoration: line-through;
+  color: #777;
+  font-size: 0.9rem;
+}
+.color-options img {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  margin-right: 5px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.5s ease;
+  &.show {
+    opacity: 1;
+    max-height: 200px; /* adjust based on content */
+  }
+}
+.color-option {
+  &:hover {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    transform: translateY(-4px);
+  }
+}

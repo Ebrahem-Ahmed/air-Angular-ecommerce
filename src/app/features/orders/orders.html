@@ -1,0 +1,102 @@
+<!-- Step-by-step template to identify the issue -->
+<div class="container">
+  <!-- Breadcrumb -->
+  <div class="breadcrumb">
+    <a routerLink="/">Home</a> / <span>My Account</span>
+  </div>
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <h1 class="page-title">ORDER HISTORY</h1>
+    <select
+      class="filter-select"
+      [value]="selectedTimeFilter()"
+      (change)="onFilterChange($event)"
+    >
+      @for (option of timeFilterOptions; track option) {
+      <option [value]="option">
+        {{ option }}
+      </option>
+      }
+    </select>
+  </div>
+
+  <!-- Loading State -->
+  @if (loading()) {
+  <div class="loading">
+    <div class="loading-spinner"></div>
+    <p>Loading your orders...</p>
+  </div>
+  }
+
+  <!-- Error State -->
+  @if (error() && !loading()) {
+  <div class="error">
+    <p>{{ error() }}</p>
+    <button (click)="loadOrders()" class="retry-button">Try Again</button>
+  </div>
+  }
+
+  <!-- Orders List - SIMPLIFIED VERSION -->
+  @if (!loading() && !error() && orders().length > 0) {
+  <div class="orders-list">
+    @for (order of orders(); track order.id) {
+    <div class="order-card">
+      <!-- Order Header -->
+      <div class="order-header">
+        <div class="order-number">Order Number: {{ order.orderNumber }}</div>
+        <button
+          class="view-button"
+          type="button"
+          (click)="viewOrderDetails(order.id)"
+        >
+          VIEW
+        </button>
+      </div>
+
+      <!-- Order Content - STEP BY STEP -->
+      <div class="order-content">
+        <!-- Just text content first, no image -->
+        <div class="order-details" style="width: 100%">
+          <div class="order-info">
+            <div class="info-row">
+              <span class="info-label">Date Ordered:</span>
+              <span>{{ formatDate(order.orderDate) }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Order Status:</span>
+              <span class="order-status status-pending">
+                {{ getStatusText(order.orderStatus) }}
+              </span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Total Items:</span>
+              <span>{{ getTotalItems(order) }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Total:</span>
+              <span>{{
+                formatCurrency(order.totalAmount || 0, order.currency)
+              }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    }
+  </div>
+  }
+
+  <!-- No Orders State -->
+  @if (!loading() && !error() && orders().length === 0) {
+  <div class="no-orders">
+    <div class="no-orders-icon">📦</div>
+    <h3>No orders found</h3>
+    <p>You haven't placed any orders yet.</p>
+    <a routerLink="/shop" class="shop-button">Start Shopping</a>
+  </div>
+  }
+
+  <!-- Back to Account Button -->
+  <a routerLink="/profile" class="back-button">BACK TO MY ACCOUNT</a>
+</div>

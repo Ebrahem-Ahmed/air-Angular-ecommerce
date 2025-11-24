@@ -1,0 +1,39 @@
+<div
+  class="product-card"
+  (mouseenter)="showColorOption()"
+  (mouseleave)="hideColorOption()"
+>
+  <!-- Product Image -->
+  <div class="product-image">
+    <img [src]="product.imageUrl.src" [alt]="product.imageUrl.alt" />
+    <span class="discount-badge">-40%</span>
+    <button class="addtocart-btn">🛒</button>
+    <button class="wishlist-btn" [routerLink]="'/wishlist'">♥</button>
+  </div>
+
+  <!-- Color options -->
+  <div class="color-options d-none" #colorOptions>
+    @for (image of product.images; track $index) {
+    <img
+      [src]="image.src"
+      (mouseenter)="setMainImage(image)"
+      (mouseleave)="resetMainImage()"
+      class="color-option"
+      alt="Color option 1"
+    />
+    }
+  </div>
+
+  <!-- Product Info -->
+  <div class="p-3">
+    <h5 class="product-title">RESPONSE SUPER SHOES</h5>
+
+    <div class="product-price mb-2">
+      <span class="new-price">EGP 4,499.40</span>
+      <span class="old-price">EGP 7,499.00</span>
+    </div>
+
+    <p class="mb-1 text-muted">Men Performance</p>
+    <p class="mb-2 text-muted">2 Colours</p>
+  </div>
+</div>

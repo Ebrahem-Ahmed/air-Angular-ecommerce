@@ -1,0 +1,327 @@
+<div class="page-container mx-lg-5">
+  <!-- Cart Section -->
+  <div class="row">
+    <h1 class="bag-title">{{ 'CART.TITLE' | translate }}</h1>
+    <p class="unserved-items">
+      [{{ cartSummary().itemCount }} {{ cartSummary().itemCount === 1 ? ('CART.ITEMS' | translate) : ('CART.ITEMS' | translate) }}]
+    </p>
+    <div class="col-lg-8">
+      <!-- Empty Cart State -->
+      <div *ngIf="cartService.isEmpty()" class="empty-cart-state">
+        <div class="text-center py-5">
+          <i class="fas fa-shopping-bag fa-3x text-muted mb-3"></i>
+          <h3>{{ 'CART.EMPTY.TITLE' | translate }}</h3>
+          <p class="text-muted">{{ 'CART.EMPTY.DESCRIPTION' | translate }}</p>
+          <button class="btn btn-dark" (click)="continueShopping()">
+            {{ 'CART.EMPTY.BUTTON' | translate }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Cart Items -->
+      <div
+        *ngFor="let item of cartItems(); trackBy: trackByCartItem"
+        class="cart-item"
+      >
+        <div class="row align-items-start">
+          <div class="col-md-4 image-cont">
+            <img
+              [src]="
+                item.imageUrl ||
+                'https://images.unsplash.com/photo-1549298916-b41d501d3772?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80'
+              "
+              [alt]="item.productName"
+              class="product-image"
+              (error)="onImageError($event)"
+            />
+          </div>
+          <div
+            class="col-md-5 mt-3 d-flex flex-column justify-content-between gap-4 align-content-center"
+          >
+            <div class="product-details">
+              <h5>{{ item.productName }}</h5>
+              <p *ngIf="item.variantDetails">{{ item.variantDetails }}</p>
+              <p>{{ 'CATEGORY.SIZE' | translate }}: {{ item.size }}</p>
+              <p
+                class="stock-warning"
+                *ngIf="item.maxStock && item.maxStock <= 5"
+              >
+                <i class="fas fa-exclamation-triangle"></i>
+                {{ 'CART.ONLY_LEFT' | translate: {count: item.maxStock} }}
+              </p>
+            </div>
+            <a href="#" class="edit-link" (click)="editItem($event, item)">
+              {{ 'CART.EDIT' | translate }}
+            </a>
+            <select
+              class="form-select quantity-selector mb-2 rounded-0 border-black"
+              [(ngModel)]="item.quantity"
+              (ngModelChange)="onQuantityChange(item.id, $event)"
+              [disabled]="isUpdating().has(item.id)"
+              [attr.data-item-id]="item.id"
+            >
+              <option
+                *ngFor="let qty of getQuantityOptions(item)"
+                [value]="qty"
+              >
+                {{ qty }}
+              </option>
+            </select>
+          </div>
+          <div class="col-md-3 mt-3 pe-3">
+            <div
+              class="d-flex justify-content-between align-items-center flex-wrap"
+            >
+              <div class="price mb-2">
+                <span class="loading-spinner" *ngIf="isUpdating().has(item.id)">
+                  <i class="fas fa-spinner fa-spin"></i>
+                </span>
+                {{ formatPrice(item.totalPrice) }}
+              </div>
+              <button
+                class="remove-btn"
+                [title]="'CART.REMOVE' | translate"
+                (click)="removeItem(item.id)"
+                [disabled]="isUpdating().has(item.id)"
+              >
+                <img src="/Icons/icon-cross.svg" alt="" srcset="" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Validation Errors -->
+      <div
+        *ngIf="validationErrors().length > 0"
+        class="alert alert-warning mt-3"
+      >
+        <h6><i class="fas fa-exclamation-triangle"></i> {{ 'CART.ISSUES' | translate }}</h6>
+        <ul class="mb-0">
+          <li *ngFor="let error of validationErrors()">{{ error }}</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Order Summary -->
+    <div class="col-lg-4">
+      <div class="order-summary" *ngIf="!cartService.isEmpty()">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <h3 class="summary-title">{{ 'CART.SUMMARY.TITLE' | translate }}</h3>
+          <small class="text-muted">
+            [{{ cartSummary().totalItems }} {{ 'CART.ITEMS' | translate }}]
+          </small>
+        </div>
+
+        <div class="summary-row">
+          <span>{{ 'CART.SUMMARY.SUBTOTAL' | translate }}</span>
+          <span>{{ formatPrice(cartSummary().subtotal) }}</span>
+        </div>
+
+        <div class="summary-row">
+          <span>{{ 'CART.SUMMARY.DELIVERY' | translate }}</span>
+          <span class="">{{ 'CART.SUMMARY.DELIVERY_FREE' | translate }}</span>
+        </div>
+
+        <p class="small text-muted mb-3">{{ 'CART.SUMMARY.DELIVERY_NOTE' | translate }}</p>
+
+        <div class="summary-row summary-total">
+          <span>{{ 'CART.SUMMARY.TOTAL' | translate }}</span>
+          <span>{{ formatPrice(cartSummary().subtotal) }}</span>
+        </div>
+
+        <button
+          class="checkout-btn fancy-btn rounded-0"
+          [disabled]="isCheckingOut() || validationErrors().length > 0"
+          (click)="proceedToCheckout()"
+        >
+          <i class="fas fa-lock me-2"></i>
+          <span *ngIf="isCheckingOut()">{{ 'CART.SUMMARY.PROCESSING' | translate }}</span>
+          <span *ngIf="!isCheckingOut()">{{ 'CART.SUMMARY.CHECKOUT' | translate }}</span>
+          <i class="fas fa-arrow-right ms-2" *ngIf="!isCheckingOut()"></i>
+          <i class="fas fa-spinner fa-spin ms-2" *ngIf="isCheckingOut()"></i>
+        </button>
+
+        <div class="mt-3">
+          <small class="text-muted d-block">{{ 'CART.SUMMARY.REWARDS_TITLE' | translate }}</small>
+          <small class="text-muted d-block">{{ 'CART.SUMMARY.REWARDS_DESC' | translate }}</small>
+          <small class="text-muted">{{ 'CART.SUMMARY.REWARDS_TERMS' | translate }}</small>
+        </div>
+
+
+
+        <!-- Payment Methods -->
+        <div class="mt-3">
+          <small class="text-muted">{{ 'CART.SUMMARY.PAYMENT_METHODS' | translate }}</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Wishlist Section with Product Card Design -->
+  <div class="row mt-5" *ngIf="!wishlistService.isEmpty()">
+    <div class="col-12">
+      <div class="wishlist-header-cart">
+        <h2 class="wishlist-title-cart">{{ 'CART.WISHLIST.TITLE' | translate }}</h2>
+      </div>
+    </div>
+
+    <!-- Wishlist Grid -->
+    <div class="col-12">
+      <div class="wishlist-grid-cart">
+        <div
+          *ngFor="
+            let item of getWishlistPreview();
+            trackBy: trackByWishlistItem
+          "
+          class="wishlist-item-cart"
+          [class.unavailable]="!item.isAvailable"
+        >
+          <!-- Product Card -->
+          <div class="product-card-cart">
+            <!-- Action Buttons Container -->
+            <div
+              class="action-buttons-container-cart position-absolute w-100 d-flex justify-content-between align-items-center p-2"
+            >
+              <!-- Add to Cart Button -->
+              <button
+                type="button"
+                class="btn btn-action-cart-wishlist d-flex justify-content-center align-items-center"
+                [disabled]="
+                  !item.isAvailable ||
+                  isAddingToCart().has(item.id) ||
+                  !hasAvailableVariants(item)
+                "
+                (click)="openWishlistVariantSelector(item, $event)"
+                [title]="'CART.WISHLIST.ADD_TO_BAG' | translate"
+              >
+                <i
+                  *ngIf="isAddingToCart().has(item.id)"
+                  class="fas fa-spinner fa-spin"
+                ></i>
+                <img
+                  *ngIf="
+                    !isAddingToCart().has(item.id) &&
+                    item.isAvailable &&
+                    hasAvailableVariants(item)
+                  "
+                  src="/Icons/add_to_cart.png"
+                  [alt]="'COMMON.ADD_TO_CART' | translate"
+                  class="action-icon"
+                />
+                <i
+                  *ngIf="!item.isAvailable || !hasAvailableVariants(item)"
+                  class="fas fa-ban disabled-icon"
+                ></i>
+              </button>
+
+              <!-- Heart Icon Button -->
+              <button
+                type="button"
+                class="btn btn-action-heart-wishlist d-flex justify-content-center align-items-center"
+                (click)="toggleWishlist(item, $event)"
+                [title]="'WISHLIST.REMOVE' | translate"
+              >
+                <img
+                  src="/Icons/wishlist.svg"
+                  [alt]="'WISHLIST.TITLE' | translate"
+                  class="action-icon"
+                />
+              </button>
+            </div>
+
+            <!-- Sale Badge -->
+            <div
+              *ngIf="
+                item.originalPrice &&
+                item.salePrice &&
+                item.salePrice < item.originalPrice
+              "
+              class="sale-badge-cart position-absolute"
+            >
+              {{ 'NAVBAR.SALE' | translate }}
+            </div>
+
+            <!-- Product Image -->
+            <div class="image-container-cart" (click)="navigateToProduct(item)">
+              <img
+                [src]="
+                  item.imageUrl ||
+                  'https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80'
+                "
+                [alt]="item.productName"
+                class="product-image-cart img-fluid"
+                loading="lazy"
+                (error)="onImageError($event)"
+              />
+
+              <!-- Unavailable Overlay -->
+              <div *ngIf="!item.isAvailable" class="unavailable-overlay-cart">
+                <span class="unavailable-text-cart">{{ 'CART.WISHLIST.OUT_OF_STOCK' | translate }}</span>
+              </div>
+
+              <!-- Quick View Overlay -->
+              <div class="quick-view-overlay-cart">
+                <button class="btn-quick-view-cart">{{ 'COMMON.QUICK_VIEW' | translate }}</button>
+              </div>
+            </div>
+
+            <!-- Product Info -->
+            <div class="product-info-cart">
+              <h3 class="product-name-cart" (click)="navigateToProduct(item)">
+                {{ item.productName }}
+              </h3>
+
+              <div
+                class="price-section-cart d-flex align-items-center flex-wrap"
+              >
+                <span class="product-price-cart me-2">{{
+                  formatPrice(item.price)
+                }}</span>
+                <span
+                  *ngIf="
+                    item.originalPrice &&
+                    item.salePrice &&
+                    item.salePrice < item.originalPrice
+                  "
+                  class="original-price-cart text-decoration-line-through text-muted"
+                >
+                  {{ formatPrice(item.originalPrice) }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- View All Wishlist Link -->
+      <div class="text-center mt-4" *ngIf="wishlistService.itemCount() > 4">
+        <button
+          class="btn btn-outline-dark btn-view-all-wishlist"
+          (click)="navigateToWishlist()"
+        >
+          {{ 'WISHLIST.TITLE' | translate }} ({{ wishlistService.itemCount() }})
+          <i class="fas fa-arrow-right ms-2"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- Enhanced Variant Selector Component for Wishlist Items -->
+  <app-variant-selector
+    [product]="selectedWishlistProduct"
+    [isOpen]="showWishlistVariantSelector"
+    (closed)="onWishlistVariantSelectorClose()"
+    (added)="onWishlistVariantAdded($event)"
+  ></app-variant-selector>
+
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" *ngIf="isValidating()">
+    <div class="loading-content">
+      <i class="fas fa-spinner fa-spin fa-2x mb-3"></i>
+      <p>{{ 'CART.VALIDATING' | translate }}</p>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,250 @@
+<main class="container my-4">
+  <nav aria-label="breadcrumb" *ngIf="breadcrumbPath.length > 0">
+    <ol class="breadcrumb">
+      <!-- if the category slug is a specific   -->
+      <li class="breadcrumb-item">
+        <a class="text-decoration-none text-black" href="/">{{
+          "CATEGORY.BREADCRUMB.HOME" | translate
+        }}</a>
+      </li>
+      <li
+        *ngFor="let breadcrumb of breadcrumbPath; let last = last"
+        class="breadcrumb-item"
+        [class.active]="last"
+        [attr.aria-current]="last ? 'page' : null"
+      >
+        <a
+          class="text-decoration-none text-black"
+          *ngIf="!last"
+          [routerLink]="['/category', breadcrumb.id]"
+          >{{ breadcrumb.name }}</a
+        >
+        <span *ngIf="last">{{ breadcrumb.name }}</span>
+      </li>
+    </ol>
+  </nav>
+
+  <section class="">
+    <div class="col-lg-9">
+      <h1 class="fw-bold">
+        {{ getCategoryDisplayName() }}
+        <span class="fs-6 text-muted">({{ totalProducts }})</span>
+      </h1>
+      <p>{{ getCategoryDescription() }}</p>
+
+      <!-- Loading state -->
+      <div *ngIf="isLoading" class="text-center my-5">
+        <div class="spinner-border" role="status">
+          <span class="visually-hidden">{{
+            "CATEGORY.LOADING" | translate
+          }}</span>
+        </div>
+      </div>
+
+      <!-- Error state -->
+      <div *ngIf="error" class="alert alert-danger" role="alert">
+        {{ error }}
+      </div>
+    </div>
+
+    <div class="col-lg-3 mb-3">
+      <app-category-filter
+        [allProducts]="allProducts"
+        [currentFilters]="currentFilters"
+        (filtersChange)="onFiltersChange($event)"
+        (filtersReset)="onFiltersReset()"
+      >
+      </app-category-filter>
+    </div>
+
+    <!-- Products Grid -->
+<!-- Modern Products Grid -->
+<div class="products-grid" *ngIf="!isLoading && !error">
+  <div
+    *ngFor="let product of products; trackBy: trackByProductId"
+    class="product-card-wrapper"
+  >
+    <div class="product-card">
+      <!-- Quick Actions -->
+      <div class="quick-actions">
+        <button
+          class="action-btn cart-btn"
+          (click)="openCartSidebar(product)"
+          [disabled]="!product.isAvailable"
+          [title]="
+            product.isAvailable
+              ? ('CATEGORY.ADD_TO_CART' | translate)
+              : ('CATEGORY.OUT_OF_STOCK' | translate)
+          "
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+          </svg>
+        </button>
+
+        <button
+          class="action-btn wishlist-btn"
+          (click)="toggleWishlist(product)"
+          [class.active]="isInWishlist(product.id)"
+          [title]="
+            isInWishlist(product.id)
+              ? ('CATEGORY.WISHLIST.REMOVE' | translate)
+              : ('CATEGORY.WISHLIST.ADD' | translate)
+          "
+        >
+          @if (isInWishlist(product.id)) {
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+          } @else {
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+          }
+        </button>
+      </div>
+
+      <!-- Product Image -->
+      <div
+        class="image-wrapper"
+        (click)="navigateToProduct(product)"
+      >
+        <!-- Badges -->
+        @if (product.isOnSale) {
+          <div class="badge-container">
+            <span class="discount-badge">{{ product.discount }}</span>
+          </div>
+        }
+
+        @if (!product.isAvailable) {
+          <div class="stock-overlay">
+            <span class="stock-badge">{{ 'CATEGORY.OUT_OF_STOCK' | translate }}</span>
+          </div>
+        }
+
+        <img
+          [src]="product.imageUrl"
+          [alt]="product.name"
+          class="product-image"
+          loading="lazy"
+        />
+
+        <!-- Hover Overlay -->
+        <div class="hover-overlay">
+          <span class="quick-view">{{ 'CATEGORY.QUICK_VIEW' | translate }}</span>
+        </div>
+      </div>
+
+      <!-- Product Info -->
+      <div class="product-info">
+        <!-- Category -->
+        <p class="product-category">{{ product.category }}</p>
+
+        <!-- Product Name -->
+        <h3 class="product-name" (click)="navigateToProduct(product)">
+          {{ product.name }}
+        </h3>
+
+        <!-- Colors Available -->
+        @if (product.availableSizes && product.availableSizes.length > 0) {
+          <div class="colors-info">
+            <div class="color-dots">
+              @for (size of product.availableSizes.slice(0, 4); track size) {
+              }
+              @if (product.availableSizes.length > 4) {
+                <span class="color-more">+{{ product.availableSizes.length - 4 }}</span>
+              }
+            </div>
+          </div>
+        }
+
+        <!-- Pricing -->
+        <div class="pricing">
+          @if (product.isOnSale) {
+            <span class="current-price sale">
+              {{ "CATEGORY.CURRENCY" | translate }}
+              {{ product.effectivePrice || product.price | number : "1.2-2" }}
+            </span>
+            @if (product.originalPrice && product.originalPrice > product.price) {
+              <span class="original-price">
+                {{ "CATEGORY.CURRENCY" | translate }}
+                {{ product.originalPrice | number : "1.2-2" }}
+              </span>
+            }
+          } @else {
+            <span class="current-price">
+              {{ "CATEGORY.CURRENCY" | translate }}
+              {{ product.price | number : "1.2-2" }}
+            </span>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <!-- Empty state -->
+    <div
+      *ngIf="!isLoading && !error && products.length === 0"
+      class="col-12 text-center my-5"
+    >
+      <div class="py-5">
+        <span style="font-size: 4rem">🔍</span>
+        <h3 class="text-muted mt-3">
+          {{ "CATEGORY.EMPTY.TITLE" | translate }}
+        </h3>
+        <p class="text-muted">
+          {{ "CATEGORY.EMPTY.DESCRIPTION" | translate }}
+        </p>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div *ngIf="totalPages > 1" class="col-12 mt-5">
+      <nav aria-label="Products pagination mt-4 ">
+        <ul class="pagination justify-content-center">
+          <li class="page-item" [class.disabled]="currentPage === 1">
+            <a
+              class="page-link rounded-0 bg-light"
+              (click)="onPageChange(currentPage - 1)"
+              style="cursor: pointer"
+            >
+              ‹ {{ "CATEGORY.PAGINATION.PREVIOUS" | translate }}
+            </a>
+          </li>
+          <li
+            *ngFor="let page of [].constructor(totalPages); let i = index"
+            class="page-item text-white"
+            [class.active]="currentPage === i + 1"
+          >
+            <a
+              class="page-link"
+              (click)="onPageChange(i + 1)"
+              style="cursor: pointer"
+              >{{ i + 1 }}</a
+            >
+          </li>
+          <li class="page-item" [class.disabled]="currentPage === totalPages">
+            <a
+              class="page-link rounded-0 bg-light"
+              (click)="onPageChange(currentPage + 1)"
+              style="cursor: pointer"
+            >
+              {{ "CATEGORY.PAGINATION.NEXT" | translate }} ›
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </section>
+</main>
+
+<!-- Add to Cart Sidebar -->
+<!-- VARIANT SELECTOR COMPONENT - REPLACES CART OFFCANVAS -->
+<app-variant-selector
+  [product]="selectedProductForVariants"
+  [isOpen]="isVariantSelectorOpen"
+  (closed)="closeVariantSelector()"
+  (added)="onVariantAdded($event)"
+></app-variant-selector>

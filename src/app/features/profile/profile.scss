@@ -1,0 +1,348 @@
+// Dashboard Container
+.dashboard-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 40px 60px;
+  background-color: #ffffff;
+  font-family: Arial, sans-serif;
+  color: #333;
+}
+
+// Header Section
+.header {
+  margin-bottom: 50px;
+
+  h1 {
+    font-size: 32px;
+    font-weight: bold;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin: 0 0 15px 0;
+    color: #000;
+  }
+
+  .breadcrumb {
+    font-size: 13px;
+    color: #666;
+
+    .breadcrumb-link {
+      color: #333;
+      text-decoration: underline;
+
+      &:hover {
+        color: #000;
+      }
+    }
+  }
+}
+
+// Main Content Layout
+.main-content {
+  display: flex;
+  gap: 50px;
+}
+
+.left-panel {
+  flex: 1.5;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.right-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+// Section Cards
+.section-card {
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  margin-bottom: -1px;
+
+  &:first-child {
+    border-top: 1px solid #e0e0e0;
+  }
+
+  &:last-child:not(.address-book-card) {
+    border-bottom: 1px solid #e0e0e0;
+  }
+}
+
+.section-header {
+  padding: 25px 30px;
+  border-bottom: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffff;
+
+  h2 {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin: 0;
+    color: #333;
+  }
+}
+
+.section-content {
+  padding: 30px;
+}
+
+// Personal Information Section
+.description {
+  font-size: 14px;
+  color: #666;
+  margin: 0 0 30px 0;
+  line-height: 1.5;
+}
+
+.details-section {
+  .details-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #f0f0f0;
+
+    h3 {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin: 0;
+      color: #333;
+    }
+  }
+
+  .user-info {
+    margin-bottom: 25px;
+
+    .info-item {
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 10px;
+      color: #333;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  .mobile-add-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 20px;
+    border-top: 1px solid #f0f0f0;
+
+    .mobile-text {
+      font-size: 13px;
+      color: #666;
+    }
+  }
+}
+
+// Buttons
+.edit-link,
+.view-link,
+.view-all-link {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #333;
+  text-decoration: underline;
+  padding: 0;
+
+  &:hover {
+    color: #000;
+  }
+}
+
+.add-mobile-button,
+.add-new-button {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  background: #ffffff;
+  border: none;
+  text-decoration: underline;
+  padding: 10px 18px;
+  cursor: pointer;
+  color: #333;
+}
+
+// Address Book Card
+.address-book-card {
+  border-bottom: 1px solid #e0e0e0;
+
+  .address-book-content {
+    padding: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    h2 {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin: 0;
+      color: #333;
+    }
+  }
+}
+
+// Wishlist Section
+.wishlist-section {
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+
+  .wishlist-header {
+    padding: 20px 25px;
+    border-bottom: 1px solid #e0e0e0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    h2 {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin: 0;
+      color: #333;
+    }
+  }
+
+  .wishlist-content {
+    padding: 25px;
+  }
+
+  .wishlist-item {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+
+    .product-image {
+      width: 100px;
+      height: 100px;
+      background: #f5f5f5;
+      flex-shrink: 0;
+      background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect fill="%23f5f5f5" width="100" height="100"/><rect x="20" y="30" width="60" height="40" rx="5" fill="%23e0e0e0"/><circle cx="50" cy="45" r="8" fill="%23d0d0d0"/><path d="M35 55 L50 45 L65 55" stroke="%23d0d0d0" stroke-width="2" fill="none"/></svg>');
+      background-size: cover;
+    }
+
+    .product-info {
+      flex: 1;
+
+      .product-name {
+        font-size: 12px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin: 0 0 15px 0;
+        line-height: 1.4;
+        color: #333;
+      }
+
+      .product-pricing {
+        .current-price {
+          font-size: 14px;
+          font-weight: 600;
+          color: #333;
+        }
+
+        .old-price {
+          font-size: 14px;
+          color: #999;
+          text-decoration: line-through;
+          margin-left: 10px;
+        }
+      }
+    }
+  }
+}
+
+// Logout Section
+.logout-section {
+  margin-top: 40px;
+  text-align: center;
+}
+
+.logout-button {
+  background: #333;
+  color: #ffffff;
+  border: none;
+  padding: 15px 35px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 15px;
+
+  .arrow {
+    font-size: 16px;
+    font-weight: normal;
+  }
+
+  &:hover {
+    background: #555;
+  }
+}
+
+// Responsive Design
+@media (max-width: 1024px) {
+  .main-content {
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  .dashboard-container {
+    padding: 30px 40px;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-container {
+    padding: 20px 20px;
+  }
+
+  .header h1 {
+    font-size: 28px;
+    letter-spacing: 2px;
+  }
+
+  .main-content {
+    gap: 30px;
+  }
+
+  .section-header,
+  .section-content {
+    padding: 20px 25px;
+  }
+
+  .membership-section .membership-image {
+    height: 180px;
+  }
+
+  .mobile-add-section {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+}

@@ -1,0 +1,37 @@
+.card {
+      border: 1px solid #dee2e6;
+      border-radius: 0.5rem;
+    }
+    
+    .card-header {
+      border-bottom: 1px solid #dee2e6;
+      background-color: #f8f9fa !important;
+    }
+    
+    .breadcrumb-item a {
+      color: #6c757d;
+    }
+    
+    .breadcrumb-item a:hover {
+      color: #495057;
+    }
+    
+    .btn-outline-secondary {
+      border-color: #6c757d;
+      color: #6c757d;
+      padding: 0.75rem 2rem;
+      text-decoration: none;
+    }
+    
+    .btn-outline-secondary:hover {
+      background-color: #6c757d;
+      color: white;
+    }
+    
+    .border-bottom:last-child {
+      border-bottom: none !important;
+    }
+    
+    .shadow-sm {
+      box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
+    }

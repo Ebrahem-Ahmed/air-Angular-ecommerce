@@ -1,0 +1,143 @@
+// Adihausdin font-face declarations
+@font-face {
+  font-family: "Adihausdin";
+  src: url("/Fonts/adihausdin_regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Adihausdin";
+  src: url("/Fonts/adihausdin_bold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Adihausdin";
+  src: url("/Fonts/adihausdin_cn.ttf") format("truetype");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --bs-font-sans-serif: "Adihausdin", sans-serif;
+}
+
+body,
+html {
+  font-family: "Adihausdin", Arial, Helvetica, "Segoe UI", "Roboto",
+    "sans-serif" !important;
+}
+.fancy-btn {
+  position: relative;
+  z-index: 1;
+}
+
+.fancy-btn::before {
+  content: "";
+  position: absolute;
+  top: 4px; /* start a little below */
+  left: 4px; /* start a little left */
+  width: 100%;
+  height: 100%;
+  border: 2px solid #000000; /* red border (you can change color) */
+  z-index: -1; /* stay behind button */
+}
+.fancy-btn:hover {
+  background-color: #000000 !important; /* Change background color on hover */
+  color: #a3a3a3; /* Change text color on hover */
+  transition: 0.1s ease-in-out; /* Change text color on hover */
+}
+.fancy-btn:hover::before {
+  top: 0; /* move to original position */
+  left: 0; /* move to original position */
+  transition: 0.1s ease-in-out;
+}
+/* fancy btn style when its disabled */
+.fancy-btn:disabled {
+  background-color: #e0e0e0 !important; /* Change background color on hover */
+  color: #a3a3a3 !important; /* Change text color on hover */
+  border: 2px solid #a3a3a3 !important; /* red border (you can change color) */
+  cursor: not-allowed;
+  border-radius: none;
+}
+.fancy-btn:disabled:hover {
+  background-color: #e0e0e0 !important; /* Change background color on hover */
+  color: #a3a3a3 !important; /* Change text color on hover */
+  border: 2px solid #a3a3a3 !important; /* red border (you can change color) */
+  cursor: not-allowed;
+}
+.fancy-btn:disabled::before {
+  border: none !important; /* red border (you can change color) */
+}
+
+html[dir="rtl"] .language-menu {
+  right: -45px !important;
+  left: auto !important;
+}
+// Custom styling to match your current design
+.toast-container {
+  .ngx-toastr {
+    margin-top: 1.5rem !important;
+    border-radius: 8px;
+    box-shadow: 0 0px 0px rgba(0, 0, 0, 0) !important;
+    min-width: 400px;
+    max-width: 500px;
+    text-align: center;
+    &:hover {
+      transform: translateY(-2px);
+      transition: 0.2s ease-in-out;
+    }
+
+    .toast-message {
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.4;
+      color: #000000;
+    }
+
+    .toast-close-button {
+      border-radius: 4px;
+      font-weight: 300;
+
+      color: #000000;
+      &:hover {
+        transform: scale(1.1);
+      }
+    }
+  }
+
+  .toast-success {
+    background: #a7c1b9;
+    color: black;
+  }
+
+  .toast-error {
+    background: #c1a7a7;
+    color: #721c24;
+  }
+
+  .toast-warning {
+    background: rgb(253, 255, 205);
+    color: #856404;
+  }
+
+  .toast-info {
+    background: #a7b5c1;
+    color: #0c5460;
+  }
+}
+
+// Mobile responsive
+@media (max-width: 768px) {
+  .toast-container {
+    .ngx-toastr {
+      min-width: 280px;
+      max-width: calc(100vw - 30px);
+    }
+  }
+}

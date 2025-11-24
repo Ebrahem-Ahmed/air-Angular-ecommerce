@@ -1,0 +1,393 @@
+<div class="container-fluid px-0">
+  <!-- Dynamic Breadcrumb -->
+  <nav aria-label="breadcrumb" class="px-3 position-relative px-md-5">
+    <ol class="breadcrumb position-absolute mt-2 top-0 z-1">
+      <!-- Loading state for breadcrumb -->
+      @if (isLoadingBreadcrumb()) {
+      <li class="breadcrumb-item">
+        <span class="text-muted small">{{
+          "PRODUCT.BREADCRUMB.LOADING" | translate
+        }}</span>
+      </li>
+      } @else {
+      <!-- Dynamic breadcrumb items -->
+      @for (item of breadcrumbItems(); track item.label) { @if (item.isActive) {
+      <!-- Active/current item (no link) -->
+      <li
+        class="breadcrumb-item active text-uppercase small fw-medium text-dark"
+        aria-current="page"
+      >
+        {{ item.label }}
+      </li>
+      } @else {
+      <!-- Clickable breadcrumb item -->
+      <li class="breadcrumb-item">
+        <a
+          href="#"
+          (click)="navigateToBreadcrumbItem(item); $event.preventDefault()"
+          class="text-decoration-none text-muted text-uppercase small fw-medium"
+        >
+          {{ item.label }}
+        </a>
+      </li>
+      } } }
+    </ol>
+  </nav>
+
+  <!-- Loading Spinner -->
+  @if (isLoading()) {
+  <div
+    class="loading-spinner d-flex justify-content-center align-items-center"
+    style="height: 400px"
+  >
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">{{ "PRODUCT.LOADING" | translate }}</span>
+    </div>
+  </div>
+  }
+
+  <!-- Product Content -->
+  @if (currentProduct() && !isLoading()) {
+  <div class="row gx-0 px-lg-4 md-4">
+    <!-- Product Images -->
+    <div class="col-lg-8 col-md-6">
+      <app-product-image-gallery
+        [images]="displayImages()"
+        [productName]="currentProduct()?.name || ''"
+        [selectedColor]="selectedColor()"
+
+        [showImageInfo]="true"
+        (imageClick)="openImageModal($event)"
+      ></app-product-image-gallery>
+
+      <!-- Product Image Modal -->
+      <app-product-image-modal
+        [selectedImage]="selectedModalImage()"
+        [currentIndex]="currentModalIndex()"
+        [totalImages]="displayImages().length"
+        [productName]="currentProduct()?.name || ''"
+        [selectedColor]="selectedColor()"
+        (previousImage)="previousImage()"
+        (nextImage)="nextImage()"
+      ></app-product-image-modal>
+
+      <!-- Product Details Accordion Section -->
+      <app-product-accordion
+        [product]="currentProduct()!"
+        [currentVariant]="currentVariant()"
+        [primaryImage]="primaryImage()"
+      ></app-product-accordion>
+
+      <!-- COMPLETE THE LOOK Section -->
+      @if (completeTheLookProducts().length > 0) {
+      <div
+        class="complete-the-look-section mt-5 border-1 border-bottom border-top pt-5"
+      >
+        <h3>{{ "PRODUCT.SECTIONS.COMPLETE_THE_LOOK" | translate }}</h3>
+
+        <app-product-slider
+          [products]="completeTheLookProducts()"
+          (categorySelected)="onCompleteTheLookCategorySelected($event)"
+        ></app-product-slider>
+      </div>
+      } @else if (isLoadingCompleteTheLook()) {
+      <div class="complete-the-look-section mt-5">
+        <div class="text-center py-4">
+          <div class="spinner-border text-muted" role="status">
+            <span class="visually-hidden">
+              {{ "PRODUCT.SECTIONS.LOADING_RECOMMENDATIONS" | translate }}</span
+            >
+          </div>
+          <p class="text-muted mt-2">
+            {{ "PRODUCT.SECTIONS.LOADING_RECOMMENDATIONS" | translate }}
+          </p>
+        </div>
+      </div>
+      }
+
+      <!-- OTHERS ALSO BOUGHT Section -->
+
+      @if (othersAlsoBoughtProducts().length > 0) {
+      <div class="others-also-bought-section mt-5">
+        <h3>{{ "PRODUCT.SECTIONS.OTHERS_ALSO_BOUGHT" | translate }}</h3>
+
+        <app-product-slider
+          [products]="othersAlsoBoughtProducts()"
+          (categorySelected)="onOthersAlsoBoughtCategorySelected($event)"
+        ></app-product-slider>
+      </div>
+      } @else if (isLoadingOthersAlsoBought()) {
+      <div class="others-also-bought-section mt-5">
+        <div class="text-center py-4">
+          <div class="spinner-border text-muted" role="status">
+            <span class="visually-hidden">
+              {{ "PRODUCT.SECTIONS.LOADING_RECOMMENDATIONS" | translate }}</span
+            >
+          </div>
+          <p class="text-muted mt-2">
+            {{ "PRODUCT.SECTIONS.LOADING_SIMILAR" | translate }}
+          </p>
+        </div>
+      </div>
+      } @else {
+      <div class="others-also-bought-section mt-5">
+        <div class="text-center py-4">
+          <p class="text-muted">
+            {{ "PRODUCT.SECTIONS.NO_RECOMMENDATIONS" | translate }}
+          </p>
+        </div>
+      </div>
+      }
+
+      <!-- Recently Viewed Section -->
+      <!-- RECENTLY VIEWED Section -->
+      @if (recentlyViewedProducts().length > 0) {
+      <div
+        class="recently-viewed-section mt-5 border-1 border-bottom border-top pt-5"
+      >
+        <h3>{{ "PRODUCT.SECTIONS.RECENTLY_VIEWED" | translate }}</h3>
+
+        <app-product-slider
+          [products]="recentlyViewedProducts()"
+          (categorySelected)="onRecentlyViewedCategorySelected($event)"
+        ></app-product-slider>
+      </div>
+      } @else if (isLoadingRecentlyViewed()) {
+      <div class="recently-viewed-section mt-5">
+        <div class="text-center py-4">
+          <div class="spinner-border text-muted" role="status">
+            <span class="visually-hidden">{{
+              "PRODUCT.SECTIONS.LOADING_RECENT" | translate
+            }}</span>
+          </div>
+          <p class="text-muted mt-2">
+            {{ "PRODUCT.SECTIONS.LOADING_RECENT" | translate }}
+          </p>
+        </div>
+      </div>
+      }
+    </div>
+
+    <!-- Product Information -->
+    <div class="col-lg-4 col-md-6 bg-white">
+      <div class="product-info" style="top: 20px">
+        <app-product-selection
+          [product]="currentProduct()!"
+
+
+          [selectedSize]="selectedSize()"
+          [canAddToCart]="canAddToCart()"
+          [isAddingToCart]="isAddingToCart()"
+          [isTogglingWishlist]="isTogglingWishlist()"
+          [isInWishlist]="isInWishlist()"
+          [effectivePrice]="effectivePrice()"
+          [discountPercentage]="discountPercentage()"
+          (colorSelect)="selectColor($event)"
+          (sizeSelect)="selectSize($event)"
+          (addToCart)="addToCart()"
+          (toggleWishlist)="toggleWishlist()"
+          (sizeChartClick)="openSizeChartModal()"
+        ></app-product-selection>
+      </div>
+    </div>
+  </div>
+
+  <!-- Size Chart Modal -->
+  <div
+    class="modal fade"
+    id="sizeChartModal"
+    tabindex="-1"
+    aria-labelledby="sizeChartModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title fw-bold" id="sizeChartModalLabel">
+            {{ "PRODUCT.SIZE_CHART.TITLE" | translate }}
+          </h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <div class="text-center mb-4">
+            <p class="text-muted">
+              {{ "PRODUCT.SIZE_CHART.SUBTITLE" | translate }}
+            </p>
+          </div>
+
+          <!-- Size Chart for Numeric Sizes -->
+          @if (isNumericSizing()) {
+          <div class="table-responsive">
+            <table class="table table-bordered">
+              <thead class="table-light">
+                <tr>
+                  <th>{{ "PRODUCT.SIZE_CHART.EU_SIZE" | translate }}</th>
+                  <th>{{ "PRODUCT.SIZE_CHART.UK_SIZE" | translate }}</th>
+                  <th>{{ "PRODUCT.SIZE_CHART.US_SIZE" | translate }}</th>
+                  <th>{{ "PRODUCT.SIZE_CHART.FOOT_LENGTH" | translate }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>36</td>
+                  <td>3.5</td>
+                  <td>4</td>
+                  <td>22.5</td>
+                </tr>
+                <tr>
+                  <td>37</td>
+                  <td>4</td>
+                  <td>4.5</td>
+                  <td>23</td>
+                </tr>
+                <tr>
+                  <td>38</td>
+                  <td>5</td>
+                  <td>6</td>
+                  <td>23.5</td>
+                </tr>
+                <tr>
+                  <td>39</td>
+                  <td>5.5</td>
+                  <td>6.5</td>
+                  <td>24</td>
+                </tr>
+                <tr>
+                  <td>40</td>
+                  <td>6</td>
+                  <td>7</td>
+                  <td>24.5</td>
+                </tr>
+                <tr>
+                  <td>41</td>
+                  <td>7</td>
+                  <td>8</td>
+                  <td>25.5</td>
+                </tr>
+                <tr>
+                  <td>42</td>
+                  <td>7.5</td>
+                  <td>8.5</td>
+                  <td>26</td>
+                </tr>
+                <tr>
+                  <td>43</td>
+                  <td>8.5</td>
+                  <td>9.5</td>
+                  <td>27</td>
+                </tr>
+                <tr>
+                  <td>44</td>
+                  <td>9</td>
+                  <td>10</td>
+                  <td>27.5</td>
+                </tr>
+                <tr>
+                  <td>45</td>
+                  <td>10</td>
+                  <td>11</td>
+                  <td>28.5</td>
+                </tr>
+                <tr>
+                  <td>46</td>
+                  <td>10.5</td>
+                  <td>11.5</td>
+                  <td>29</td>
+                </tr>
+                <tr>
+                  <td>47</td>
+                  <td>11.5</td>
+                  <td>12.5</td>
+                  <td>30</td>
+                </tr>
+                <tr>
+                  <td>48</td>
+                  <td>12</td>
+                  <td>13</td>
+                  <td>30.5</td>
+                </tr>
+                <tr>
+                  <td>49</td>
+                  <td>13</td>
+                  <td>14</td>
+                  <td>31.5</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          } @else {
+          <!-- Size Chart for Letter Sizes -->
+          <div class="table-responsive">
+            <table class="table table-bordered">
+              <thead class="table-light">
+                <tr>
+                  <th>{{ "PRODUCT.DETAILS.SIZE" | translate }}</th>
+                  <th>{{ "PRODUCT.SIZE_CHART.CHEST" | translate }}</th>
+                  <th>{{ "PRODUCT.SIZE_CHART.WAIST" | translate }}</th>
+                  <th>{{ "PRODUCT.SIZE_CHART.HIP" | translate }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>XS</td>
+                  <td>86-89</td>
+                  <td>66-69</td>
+                  <td>86-89</td>
+                </tr>
+                <tr>
+                  <td>S</td>
+                  <td>90-93</td>
+                  <td>70-73</td>
+                  <td>90-93</td>
+                </tr>
+                <tr>
+                  <td>M</td>
+                  <td>94-97</td>
+                  <td>74-77</td>
+                  <td>94-97</td>
+                </tr>
+                <tr>
+                  <td>L</td>
+                  <td>98-101</td>
+                  <td>78-81</td>
+                  <td>98-101</td>
+                </tr>
+                <tr>
+                  <td>XL</td>
+                  <td>102-105</td>
+                  <td>82-85</td>
+                  <td>102-105</td>
+                </tr>
+                <tr>
+                  <td>XXL</td>
+                  <td>106-109</td>
+                  <td>86-89</td>
+                  <td>106-109</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          }
+
+          <div
+            class="alert alert-info border-0 rounded-3"
+            style="background-color: #e7f3ff"
+          >
+            <i class="fas fa-info-circle me-2 text-info"></i>
+            <strong>{{ "PRODUCT.SIZE_CHART.TIP" | translate }}</strong>
+            @if (isNumericSizing()) {
+            {{ "PRODUCT.SIZE_CHART.NUMERIC_TIP" | translate }}} @else {
+            {{ "PRODUCT.SIZE_CHART.LETTER_TIP" | translate }} }
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  }
+</div>

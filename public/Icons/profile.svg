@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="20px" height="19px" viewBox="0 0 20 19" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Icons/Functional/Profile/black</title>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Product-List-Page-(Mobile)" transform="translate(-263.000000, -62.000000)">
+            <g id="HeaderFooter/Header/375/Mobile_Header-White-Copy" transform="translate(0.000000, 40.000000)">
+                <g id="Group-7" transform="translate(259.000000, 17.000000)">
+                    <polygon id="Fill-1" points="0 28 28 28 28 0 0 0"></polygon>
+                    <g id="Group-6" transform="translate(5.000000, 6.083333)" stroke="#000000" stroke-width="2">
+                        <polyline id="Stroke-2" points="18 16.5 14.625 12 3.375 12 0 16.5"></polyline>
+                        <path d="M13.5,4.5 C13.5,6.985 11.485,9 9,9 C6.514,9 4.5,6.985 4.5,4.5 C4.5,2.015 6.514,0 9,0 C11.485,0 13.5,2.015 13.5,4.5 Z" id="Stroke-4"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

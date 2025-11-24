@@ -1,0 +1,22 @@
+.rating {
+  display: flex;
+  align-items: center;
+  color: #00cc00;
+  font-size: 18px;
+}
+.star {
+  cursor: pointer;
+  margin-right: 2px;
+  transition: color 0.3s;
+}
+.filled {
+  color: #013501;
+}
+.rating-value {
+  margin-left: 10px;
+  font-weight: bold;
+}
+.rating-count {
+  margin-left: 5px;
+  color: #666;
+}

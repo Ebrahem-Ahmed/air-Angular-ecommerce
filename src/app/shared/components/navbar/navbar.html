@@ -1,0 +1,570 @@
+
+<style>
+/* Force all dropdowns to open downward, never to the side */
+.main-navbar {
+  .nav-item.dropdown {
+    z-index: 10000;
+  }
+
+  .dropdown-menu {
+    z-index: 9999 !important;
+  }
+}
+
+.secondary-header {
+  .user-dropdown,
+  .language-dropdown {
+    z-index: 10000 !important;
+  }
+
+  .dropdown-menu {
+    z-index: 9999 !important;
+  }
+}
+.main-navbar .dropdown-menu {
+  position: absolute !important;
+  top: 100% !important;
+  left: 0 !important;
+  right: auto !important;
+  transform: none !important;
+  margin-top: 0 !important; /* إزالة المسافة */
+}
+
+.main-navbar .dropdown-menu .dropdown-menu {
+  position: static !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Remove any side positioning */
+.main-navbar .dropend .dropdown-menu,
+.main-navbar .dropstart .dropdown-menu {
+  top: 100% !important;
+  left: 0 !important;
+  right: auto !important;
+}
+
+/* Keep dropdown visible on hover - عشان القائمة متختفيش */
+.main-navbar .nav-item.dropdown {
+  position: relative;
+}
+
+.main-navbar .nav-item.dropdown:hover > .dropdown-menu {
+  display: block !important;
+}
+
+/* إضافة padding للـ nav-item عشان ميبقاش فيه مسافة */
+.main-navbar .nav-item.dropdown {
+  padding-bottom: 0 !important;
+}
+</style>
+
+<!-- Secondary header with utility links -->
+<div class="secondary-header bg-light py-2 fs-6 d-lg-block">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-12">
+        <div class="d-flex justify-content-end align-items-center">
+          <nav class="secondary-nav">
+            <ul class="nav nav-pills">
+             <!--  <li class="nav-item d-none d-lg-block">
+                <a href="#" class="nav-link text-dark small">
+                  {{ "NAVBAR.OFFICIAL_WEBSITE" | translate }}
+                </a>
+              </li> -->
+             <!--  <li class="nav-item d-none d-lg-block">
+                <a href="#" class="nav-link text-dark small">{{
+                  "NAVBAR.HELP" | translate
+                }}</a>
+              </li> -->
+              <li class="nav-item d-none d-lg-block">
+                <a routerLink="/orders" class="nav-link text-dark small">
+                  {{ "NAVBAR.ORDERS_RETURNS" | translate }}
+                </a>
+              </li>
+
+              <!-- Login/User section -->
+              <li
+                class="nav-item position-relative user-dropdown"
+                *ngIf="!isAuthenticated"
+              >
+                <button
+                  class="nav-link text-dark small border-0 bg-transparent"
+                  (click)="navigateToLogin()"
+                  type="button"
+                >
+                  {{ "NAVBAR.LOGIN" | translate }}
+                </button>
+              </li>
+
+              <!-- User dropdown for authenticated users -->
+              <li
+                class="nav-item position-relative user-dropdown"
+                *ngIf="isAuthenticated"
+              >
+                <button
+                  class="nav-link text-dark small d-flex align-items-center border-0 bg-transparent"
+                  (click)="toggleUserDropdown()"
+                  type="button"
+                >
+                  <span class="me-1"
+                    >{{ "NAVBAR.HI" | translate }}
+                    {{ getUserDisplayName() }}</span
+                  >
+                  <svg
+                    width="12"
+                    height="12"
+                    fill="currentColor"
+                    class="dropdown-arrow"
+                  >
+                    <path d="M6 9L2 5h8z" />
+                  </svg>
+                </button>
+
+                <!-- User Dropdown Menu -->
+                <div
+                  class="dropdown-menu user-menu"
+                  [class.show]="isUserDropdownOpen"
+                >
+                  <div class="dropdown-header d-flex align-items-center py-2">
+                    <div class="user-avatar me-2">
+                      <span class="avatar-initials">{{
+                        getUserInitials()
+                      }}</span>
+                    </div>
+                    <div>
+                      <div class="fw-bold">{{ getUserDisplayName() }}</div>
+                      <small class="text-muted">{{ currentUser?.email }}</small>
+                    </div>
+                  </div>
+                  <div class="dropdown-divider"></div>
+
+                  <button
+                    class="dropdown-item d-flex align-items-center text-danger"
+                    (click)="logout()"
+                    type="button"
+                  >
+                    <svg
+                      width="16"
+                      height="16"
+                      fill="currentColor"
+                      class="me-2"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"
+                      />
+                      <path
+                        fill-rule="evenodd"
+                        d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"
+                      />
+                    </svg>
+                    <span>{{ "NAVBAR.LOGOUT" | translate }}</span>
+                  </button>
+                </div>
+              </li>
+
+              <!-- Language Switcher -->
+              <li class="nav-item position-relative language-dropdown">
+                <button
+                  class="nav-link text-dark small d-flex align-items-center border-0 bg-transparent"
+                  (click)="toggleLanguageDropdown()"
+                  type="button"
+                >
+                  <img
+                    [src]="getCurrentLanguage().flag"
+                    [alt]="getCurrentLanguage().name"
+                    class="img-fluid me-2"
+                    style="width: 20px; height: auto"
+                  />
+                  <span class="me-1">{{ getCurrentLanguage().name }}</span>
+                  <svg
+                    width="12"
+                    height="12"
+                    fill="currentColor"
+                    class="dropdown-arrow"
+                    [class.rotated]="isLanguageDropdownOpen"
+                  >
+                    <path d="M6 9L2 5h8z" />
+                  </svg>
+                </button>
+
+                <!-- Language Dropdown Menu -->
+                <div
+                  class="dropdown-menu language-menu"
+                  [class.show]="isLanguageDropdownOpen"
+                >
+                  <button
+                    *ngFor="let language of languages"
+                    class="dropdown-item d-flex align-items-center"
+                    (click)="switchLanguage(language.code)"
+                    [class.active]="currentLanguage === language.code"
+                    type="button"
+                  >
+                    <img
+                      [src]="language.flag"
+                      [alt]="language.name"
+                      class="img-fluid me-2"
+                      style="width: 16px; height: auto"
+                    />
+                    <span class="flex-grow-1">{{ language.name }}</span>
+                    <svg
+                      *ngIf="currentLanguage === language.code"
+                      width="16"
+                      height="16"
+                      fill="currentColor"
+                      class="ms-auto text-primary"
+                    >
+                      <path d="M13.5 3L6 10.5L2.5 7l1-1L6 8.5L12.5 2l1 1z" />
+                    </svg>
+                  </button>
+                </div>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Main navigation with Bootstrap dropdowns -->
+<!-- Main navigation with Bootstrap dropdowns -->
+<nav
+  class="navbar navbar-expand-lg navbar-light bg-white main-navbar sticky-top"
+>
+  <div class="container-fluid px-0 px-lg-5">
+    <!-- Brand -->
+    <a class="navbar-brand" routerLink="/">
+      <img
+        src="/Icons/air.jpg"
+        alt="Adidas Logo"
+        style="width: 60px; height: auto"
+      />
+    </a>
+
+    <!-- Toggle -->
+    <button
+      class="navbar-toggler border-0"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarNav"
+      aria-controls="navbarNav"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Nav links with Bootstrap dropdowns -->
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav m-auto">
+        <li
+          class="nav-item dropdown px-2 d-flex align-items-center"
+          *ngFor="let mainCategory of mainCategories"
+          [ngClass]="{'dropdown': mainCategory.subCategories?.length > 0}"
+        >
+          <!-- الرابط الرئيسي -->
+          <a
+            class="nav-link fw-bold text-uppercase p-0"
+            [routerLink]="['/category', mainCategory.slug]"
+            [attr.data-bs-toggle]="mainCategory.subCategories?.length > 0 ? 'dropdown' : null"
+          >
+            {{ mainCategory.name }}
+          </a>
+
+          <!-- زرار dropdown لو فيه تصنيفات فرعية -->
+          <button
+            *ngIf="mainCategory.subCategories?.length > 0"
+            type="button"
+            class="dropdown-toggle dropdown-toggle-split border-0 bg-transparent"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            <span class="visually-hidden">Toggle Dropdown</span>
+          </button>
+
+          <!-- القائمة الفرعية - تم إزالة class="dropend" -->
+          <ul
+            class="dropdown-menu shadow"
+            *ngIf="mainCategory.subCategories?.length > 0"
+          >
+            <!-- الروابط الفرعية - تم إزالة class="dropend dropdown-submenu" -->
+            <li *ngFor="let subCategory of mainCategory.subCategories">
+              <a
+                class="dropdown-item"
+                [routerLink]="['/category', subCategory.slug]"
+              >
+                {{ subCategory.name }}
+              </a>
+            </li>
+          </ul>
+        </li>
+
+        <!-- باقي الروابط الثابتة -->
+        <li class="nav-item">
+          <a class="nav-link fw-bold text-uppercase px-3" routerLink="/category/new">
+            {{ "NAVBAR.NEW" | translate }}
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link fw-bold text-uppercase px-3 text-danger" routerLink="/category/sale">
+            {{ "NAVBAR.SALE" | translate }}
+          </a>
+        </li>
+      </ul>
+
+      <!-- Right actions (search, account, wishlist, cart) -->
+      <div class="d-flex align-items-center navbar-actions">
+        <!-- Search with dropdown -->
+        <div class="search-container position-relative me-3 d-none d-md-block">
+          <form
+            class="search-form position-relative d-flex"
+            (ngSubmit)="onSearch()"
+          >
+            <input
+              #searchInput
+              type="search"
+              class="form-control search-input"
+              [placeholder]="'NAVBAR.SEARCH_PLACEHOLDER' | translate"
+              [(ngModel)]="searchQuery"
+              name="search"
+              (focus)="onSearchFocus()"
+              (blur)="onSearchBlur()"
+              (input)="onSearchInput()"
+              autocomplete="off"
+            />
+            <button
+              type="submit"
+              class="search-btn"
+              [disabled]="isSearchLoading"
+            >
+              <span
+                *ngIf="isSearchLoading"
+                class="spinner-border spinner-border-sm"
+                role="status"
+              ></span>
+              <img
+                *ngIf="!isSearchLoading"
+                src="/Icons/search_icon.svg"
+                alt="Search Icon"
+                class="img-fluid"
+                style="width: 20px; height: auto"
+              />
+            </button>
+          </form>
+
+          <!-- Search Results Dropdown -->
+          <div
+            class="search-dropdown"
+            *ngIf="
+              isSearchFocused && (searchResults.length > 0 || isSearchLoading)
+            "
+          >
+            <div class="search-results-container">
+              <!-- Loading state -->
+              <div *ngIf="isSearchLoading" class="text-center p-3">
+                <div class="spinner-border spinner-border-sm" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+                <div class="mt-2 small text-muted">
+                  {{ "NAVBAR.SEARCHING" | translate }}
+                </div>
+              </div>
+
+              <!-- Search Results -->
+              <div *ngIf="!isSearchLoading && searchResults.length > 0">
+                <!-- Products Section -->
+                <div
+                  class="search-section"
+                  *ngIf="getProductResults().length > 0"
+                >
+                  <h6 class="search-section-title">
+                    {{ "NAVBAR.PRODUCTS" | translate }}
+                  </h6>
+                  <div
+                    *ngFor="let result of getProductResults()"
+                    class="search-result-item"
+                    (click)="onSearchResultClick(result)"
+                  >
+                    <div class="d-flex align-items-center">
+                      <div
+                        class="search-result-image me-2"
+                        *ngIf="result.image"
+                      >
+                        <img
+                          [src]="result.image"
+                          [alt]="result.title"
+                          class="img-fluid"
+                        />
+                      </div>
+                      <div
+                        class="search-result-icon me-2"
+                        *ngIf="!result.image"
+                      >
+                        <svg width="16" height="16" fill="currentColor">
+                          <circle cx="8" cy="8" r="3" />
+                        </svg>
+                      </div>
+                      <div class="flex-grow-1">
+                        <div class="search-result-title">
+                          {{ result.title }}
+                        </div>
+                        <div class="search-result-price" *ngIf="result.price">
+                          {{ result.price }}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Categories Section -->
+                <div
+                  class="search-section"
+                  *ngIf="getCategoryResults().length > 0"
+                >
+                  <h6 class="search-section-title">
+                    {{ "NAVBAR.CATEGORIES" | translate }}
+                  </h6>
+                  <div
+                    *ngFor="let result of getCategoryResults()"
+                    class="search-result-item"
+                    (click)="onSearchResultClick(result)"
+                  >
+                    <div class="d-flex align-items-center">
+                      <div class="search-result-icon me-2">
+                        <svg width="16" height="16" fill="currentColor">
+                          <rect x="2" y="2" width="12" height="12" rx="2" />
+                        </svg>
+                      </div>
+                      <div class="search-result-title">{{ result.title }}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- No Results -->
+              <div
+                *ngIf="
+                  !isSearchLoading &&
+                  searchResults.length === 0 &&
+                  searchQuery.trim()
+                "
+                class="text-center p-3"
+              >
+                <div class="text-muted">
+                  {{ "NAVBAR.NO_RESULTS" | translate }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mobile search button -->
+        <button
+          class="btn p-2 d-md-none me-2"
+          type="button"
+          (click)="onSearchFocus()"
+        >
+          <svg width="20" height="20" class="search-icon">
+            <circle
+              cx="8"
+              cy="8"
+              r="6"
+              stroke="currentColor"
+              stroke-width="2"
+              fill="none"
+            />
+            <path d="m16 16 4 4" stroke="currentColor" stroke-width="2" />
+          </svg>
+        </button>
+
+        <!-- Account -->
+        <button class="btn p-2 me-2" (click)="onAccountClick()">
+          <img
+            src="/Icons/profile.svg"
+            alt="profile"
+            class="img-fluid"
+            style="width: 20px; height: auto"
+          />
+        </button>
+
+        <!-- Wishlist -->
+   <button class="btn p-2 me-2" (click)="onWishlistClick()">
+  @if (wishlistCount() > 0) {
+    <div class="position-relative">
+      <!-- أيقونة Wishlist (قلب ماليان) -->
+      <i
+        class="fa-solid fa-heart text-danger"
+        style="font-size: 20px; cursor: pointer"
+      ></i>
+
+      <!-- Wishlist Badge -->
+      <span
+        class="badge bg-primary rounded-pill wishlist-badge position-absolute translate-middle"
+        style="top: -5px; right: -10px"
+      >
+        {{ wishlistCount() }}
+      </span>
+    </div>
+  } @else {
+    <!-- أيقونة Wishlist (قلب فاضي) -->
+    <i
+      class="fa-regular fa-heart"
+      style="font-size: 20px; cursor: pointer"
+    ></i>
+  }
+</button>
+
+        <!-- Cart -->
+        <button class="btn p-2 position-relative" (click)="onCartClick()">
+          @if(cartCount() > 0) {
+          <div class="position-relative">
+            <img
+              src="/Icons/bag_full.svg"
+              alt="Cart"
+              class="img-fluid"
+              style="width: 20px; height: auto"
+            />
+            <!-- Cart Badge -->
+            <span class="badge bg-primary rounded-pill cart-badge">
+              {{ cartCount() }}
+            </span>
+          </div>
+          }@else{
+          <img
+            src="/Icons/bag empty.svg"
+            alt="Cart"
+            class="img-fluid"
+            style="width: 20px; height: auto"
+          />
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+</nav>
+<!-- School promotion banner with close functionality -->
+<div
+  class="promo-banner bg-light d-none d-md-block banner-slide-down"
+  *ngIf="showPromoBanner"
+>
+  <div class="container-fluid py-3">
+    <div class="row">
+      <div class="col-12 text-center position-relative">
+        <span class="small">{{ "NAVBAR.SCHOOL_PROMO" | translate }} </span>
+        <a href="#" class="text-decoration-underline fw-bold small">
+          {{ "NAVBAR.SHOP_NOW" | translate }}
+        </a>
+        <button
+          type="button"
+          class="btn-close position-absolute end-0 top-50 translate-middle-y me-3"
+          aria-label="Close"
+          (click)="closePromoBanner()"
+        ></button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,14 @@
+<div class="rating" (mouseleave)="resetRating()">
+  @for (star of starsArray; let i = $index; track i) {
+    <span
+      class="star"
+      [class.filled]="i < hoveredRating || i < ratingValue"
+      (mouseover)="hoverRating(i + 1)"
+      (click)="setRating(i + 1)"
+    >
+      ★
+    </span>
+  }
+  <span class="rating-value">{{ ratingValue }}</span>
+  <span class="rating-count">({{ count }})</span>
+</div>

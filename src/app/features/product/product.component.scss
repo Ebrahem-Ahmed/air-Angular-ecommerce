@@ -1,0 +1,699 @@
+// Utility Classes
+.letter-spacing-1 {
+  letter-spacing: 1px;
+}
+
+.letter-spacing-2 {
+  letter-spacing: 2px;
+}
+
+// Color options styling
+.color-option {
+  transition: all 0.3s ease;
+  position: relative;
+
+  &:hover:not(.disabled) {
+    transform: scale(1.05);
+    border-color: #000 !important;
+  }
+
+  &.selected {
+    transform: scale(1.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    border-color: #000 !important;
+  }
+
+  &.disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
+  }
+
+  // Color stripe lines
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    background: inherit;
+    transform: rotate(-45deg);
+    transform-origin: right;
+  }
+}
+
+// Size options styling
+.size-option {
+  transition: all 0.3s ease;
+  position: relative;
+
+  &:hover:not(:disabled):not(.text-muted) {
+    transform: translateY(-2px);
+    border-color: #000 !important;
+  }
+
+  &:disabled,
+  &.text-muted {
+    cursor: not-allowed;
+    opacity: 0.1 !important;
+
+    &:hover {
+      transform: none;
+      box-shadow: none;
+    }
+  }
+}
+
+// Thumbnail gallery styling
+.thumbnail {
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  border-radius: 4px;
+  overflow: hidden;
+
+  &:hover {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+
+  &.active {
+    border-color: #000 !important;
+    transform: scale(1.05);
+  }
+
+  img {
+    transition: transform 0.3s ease;
+  }
+}
+
+// Wishlist button styling
+.btn-wishlist {
+  transition: all 0.3s ease;
+  border-radius: 4px;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+}
+
+// Product title styling
+.product-title {
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  line-height: 1.2;
+}
+
+// Action buttons
+.action-buttons {
+  .btn {
+    border-radius: 0;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 16px 24px;
+    transition: all 0.3s ease;
+
+    &:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+}
+
+// Accordion styling
+.accordion {
+  .accordion-item {
+    border: none;
+    border-bottom: 1px solid #dee2e6 !important;
+    border-radius: 0;
+
+    &:last-child {
+      border-bottom: none !important;
+    }
+
+    .accordion-header {
+      .accordion-button {
+        padding: 1.5rem 0;
+        font-size: 1rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border: none;
+        box-shadow: none;
+        border-radius: 0;
+
+        &:not(.collapsed) {
+          background-color: transparent;
+          color: #000;
+          box-shadow: none;
+        }
+
+        &:focus {
+          border-color: transparent;
+          box-shadow: none;
+        }
+
+        &::after {
+          background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23000'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+        }
+      }
+    }
+
+    .accordion-body {
+      padding: 1.5rem 0 2rem 0;
+      border-top: none;
+    }
+  }
+}
+
+// Complete the look section
+.complete-look {
+  background-color: #f8f9fa;
+
+  h2 {
+    font-weight: 700;
+    color: #000;
+  }
+}
+
+// Price styling
+.price-container {
+  .price {
+    font-size: 1.5rem;
+    color: #000;
+  }
+
+  .original-price {
+    font-size: 1.2rem;
+  }
+}
+
+// Size chart modal
+.modal {
+  .modal-content {
+    border-radius: 8px;
+    border: none;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  }
+
+  .modal-header {
+    padding: 1.5rem 1.5rem 0 1.5rem;
+  }
+
+  .modal-body {
+    padding: 1.5rem;
+  }
+
+  .table {
+    th {
+      background-color: #f8f9fa;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.875rem;
+      letter-spacing: 0.5px;
+      border-color: #dee2e6;
+    }
+
+    td {
+      font-weight: 500;
+      border-color: #dee2e6;
+    }
+  }
+}
+
+// Image gallery enhancements
+.main-image {
+  img {
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.thumbnail-gallery {
+  .thumbnail {
+    border-radius: 8px;
+
+    img {
+      border-radius: 6px;
+    }
+  }
+}
+
+// Loading states
+.spinner-border-sm {
+  width: 1rem;
+  height: 1rem;
+}
+
+// Alert styling
+.alert {
+  border-radius: 8px;
+  border: none;
+
+  &.alert-success {
+    background-color: #d1e7dd;
+    color: #0a3622;
+  }
+
+  &.alert-danger {
+    background-color: #f8d7da;
+    color: #58151c;
+  }
+
+  &.alert-warning {
+    background-color: #fff3cd;
+    color: #664d03;
+  }
+
+  &.alert-info {
+    background-color: #d1ecf1;
+    color: #055160;
+  }
+}
+
+// Breadcrumb styling
+.breadcrumb {
+  background: none;
+  padding: 0;
+  margin-bottom: 1rem;
+
+  .breadcrumb-item {
+    &:not(:last-child) {
+      a {
+        color: #6c757d;
+        transition: color 0.3s ease;
+
+        &:hover {
+          color: #000;
+        }
+      }
+    }
+
+    &.active {
+      color: #000;
+      font-weight: 600;
+    }
+  }
+}
+
+// Animation keyframes
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Apply animations
+.product-info,
+.product-gallery,
+.accordion-item {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+// Responsive design adjustments for image grid
+@media (max-width: 768px) {
+  .product-gallery {
+    .image-grid {
+      .main-images-grid {
+        height: 500px;
+        gap: 8px;
+        grid-template-columns: 2fr 1fr;
+      }
+
+      .additional-images-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 8px;
+
+        .additional-image-container {
+          height: 150px;
+        }
+      }
+    }
+  }
+
+  .show-more-overlay {
+    .fs-6 {
+      font-size: 1.2rem !important;
+    }
+    .small {
+      font-size: 0.75rem !important;
+    }
+  }
+
+  .product-title {
+    font-size: 1.5rem !important;
+  }
+
+  .action-buttons {
+    flex-direction: column !important;
+
+    .btn {
+      margin-bottom: 0.5rem;
+      width: 100%;
+    }
+  }
+
+  .color-options,
+  .size-options {
+    justify-content: center;
+  }
+
+  .thumbnail-gallery {
+    justify-content: center !important;
+    padding: 0 1rem;
+  }
+
+  .accordion-item .accordion-button {
+    font-size: 0.9rem;
+    padding: 1rem 0;
+  }
+}
+
+@media (max-width: 576px) {
+  .product-gallery {
+    .image-grid {
+      .main-images-grid {
+        height: 350px;
+        gap: 4px;
+      }
+
+      .additional-images-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 6px;
+
+        .additional-image-container {
+          height: 120px;
+        }
+      }
+    }
+  }
+
+  .show-more-overlay {
+    .fs-6 {
+      font-size: 1rem !important;
+    }
+    .small {
+      font-size: 0.65rem !important;
+    }
+  }
+
+  .container-fluid {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+
+  .product-title {
+    font-size: 1.25rem !important;
+    letter-spacing: 1px;
+  }
+
+  .price-container .price {
+    font-size: 1.25rem;
+  }
+
+  .color-option {
+    width: 44px !important;
+    height: 44px !important;
+  }
+
+  .size-option {
+    width: 44px !important;
+    height: 44px !important;
+    font-size: 12px !important;
+  }
+
+  .thumbnail {
+    width: 70px !important;
+    height: 70px !important;
+  }
+}
+
+// Additional enhancements for premium look
+.product-info {
+  top: 20px;
+}
+
+.fancy-btn {
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.2),
+      transparent
+    );
+    transition: left 0.5s;
+  }
+
+  &:hover::before {
+    left: 100%;
+  }
+}
+
+.feature-item {
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: translateX(5px);
+  }
+}
+
+// Enhanced loading spinner
+.loading-spinner {
+  .spinner-border {
+    width: 3rem;
+    height: 3rem;
+    border-width: 0.25rem;
+    color: #000;
+  }
+}
+// Updated Product Gallery Grid Styles - 2x2 Uniform Grid System
+// Dynamic Grid System for Image Gallery
+.product-gallery {
+  .image-grid {
+    // Single Image Layout
+    .single-image-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      grid-template-rows: 1fr;
+      gap: 0;
+      height: 900px;
+      position: relative;
+    }
+
+    // Two Images Layout (side by side)
+    .two-images-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr;
+      gap: 3px;
+      height: 700px;
+      position: relative;
+    }
+
+    // Three Images Layout (one large on left, two stacked on right)
+    .three-images-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 3px;
+      height: 700px;
+      position: relative;
+
+      .image-container:first-child {
+        grid-row: 1 / -1; // Span all rows
+      }
+    }
+
+    // Four Images Layout (2x2 grid)
+    .four-images-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 3px;
+      height: 700px;
+      position: relative;
+    }
+
+    // Common styling for all image containers
+    .image-container {
+      background-color: #f8f9fa;
+      overflow: hidden;
+      cursor: pointer;
+      position: relative;
+      height: 100%;
+      width: 100%;
+      transition: all 0.3s ease;
+
+      .gallery-image {
+        transition: transform 0.3s ease;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+
+        &:hover {
+          transform: scale(1.05);
+        }
+      }
+
+      &:hover {
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        transform: translateY(-2px);
+      }
+    }
+
+    // Additional images grid (for when showing more)
+    .additional-images-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 3px;
+      margin-top: 1rem;
+
+      .additional-image-container {
+        height: 300px;
+        background-color: #f8f9fa;
+        overflow: hidden;
+        cursor: pointer;
+        transition: all 0.3s ease;
+
+        .gallery-image {
+          transition: transform 0.3s ease;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+
+          &:hover {
+            transform: scale(1.05);
+          }
+        }
+
+        &:hover {
+          box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+          transform: translateY(-2px);
+        }
+      }
+    }
+  }
+}
+
+// Responsive design adjustments
+@media (max-width: 768px) {
+  .product-gallery {
+    .image-grid {
+      .single-image-grid,
+      .two-images-grid,
+      .three-images-grid,
+      .four-images-grid {
+        height: 500px;
+        gap: 8px;
+      }
+
+      // Adjust three images grid for mobile
+      .three-images-grid {
+        grid-template-columns: 1.5fr 1fr;
+      }
+
+      .additional-images-grid {
+        gap: 8px;
+
+        .additional-image-container {
+          height: 200px;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 576px) {
+  .product-gallery {
+    .image-grid {
+      .single-image-grid,
+      .two-images-grid,
+      .three-images-grid,
+      .four-images-grid {
+        height: 400px;
+        gap: 6px;
+      }
+
+      // Stack two images vertically on very small screens
+      .two-images-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr 1fr;
+      }
+
+      // Adjust three images to stack better on mobile
+      .three-images-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: 2fr 1fr 1fr;
+
+        .image-container:first-child {
+          grid-row: 1;
+        }
+      }
+
+      .additional-images-grid {
+        gap: 6px;
+
+        .additional-image-container {
+          height: 150px;
+        }
+      }
+    }
+  }
+}
+
+// Animation for smooth transitions
+.single-image-grid,
+.two-images-grid,
+.three-images-grid,
+.four-images-grid,
+.additional-images-grid {
+  animation: fadeInUp 0.4s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Enhanced hover effects for better UX
+.image-container {
+  transition: all 0.3s ease;
+
+  &:hover:not(.placeholder) {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+  }
+}
+
+.additional-image-container {
+  transition: all 0.3s ease;
+
+  &:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+  }
+}

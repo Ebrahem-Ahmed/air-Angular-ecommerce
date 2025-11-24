@@ -1,0 +1,120 @@
+
+/* الخلفية الديناميكية */
+.hero-ac-section {
+  background: linear-gradient(135deg, #2563eb 0%, #06b6d4 50%, #1d4ed8 100%);
+  position: relative;
+}
+
+.ac-bg-overlay {
+  background: url('/Icons/blueair.jpg') center/cover no-repeat;
+  opacity: 0.35;
+  mix-blend-mode: overlay;
+}
+
+/* تأثير التدرج الملون على النص */
+.text-gradient {
+  background: linear-gradient(90deg, #00d4ff, #00ff9d);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* زر متوهج */
+.btn-glow {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(45deg, #00d4ff, #00ff9d);
+  border: none;
+  transition: all 0.4s ease;
+}
+
+.btn-glow:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(0, 212, 255, 0.4);
+}
+
+/* الصور المتحركة */
+.ac-image-wrapper {
+  perspective: 1000px;
+}
+
+.main-ac img {
+  max-height: 500px;
+  object-fit: contain;
+}
+
+.floating-ac {
+  position: absolute;
+  z-index: 2;
+  animation-duration: 12s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+
+.ac-1 {
+  top: -10%;
+  right: 5%;
+  width: 180px;
+  animation: float-1 14s infinite ease-in-out;
+}
+
+.ac-2 {
+  bottom: 10%;
+  left: -5%;
+  width: 160px;
+  animation: float-2 16s infinite ease-in-out;
+}
+
+@keyframes float-1 {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-30px) rotate(5deg); }
+}
+
+@keyframes float-2 {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(20px) rotate(-5deg); }
+}
+
+/* موجات الهواء البارد */
+.cold-wave {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  border: 4px solid rgba(0, 212, 255, 0.3);
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: wave 4s infinite;
+}
+
+.wave-2 { animation-delay: 1s; width: 180px; height: 180px; }
+.wave-3 { animation-delay: 2s; width: 240px; height: 240px; }
+
+@keyframes wave {
+  0% { transform: translate(-50%, -50%) scale(0.3); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
+}
+
+/* جزيئات خفيفة */
+.particles span {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: rgba(0, 212, 255, 0.6);
+  border-radius: 50%;
+  animation: particles var(--d) linear infinite;
+}
+
+@keyframes particles {
+  0% { transform: translate(0, 100vh); }
+  100% { transform: translate(0, -100px); }
+}
+
+.particles span:nth-child(1) { left: 10%; animation-delay: 0s; }
+.particles span:nth-child(2) { left: 30%; animation-delay: 3s; }
+.particles span:nth-child(3) { left: 50%; animation-delay: 6s; }
+.particles span:nth-child(4) { left: 70%; animation-delay: 2s; }
+.particles span:nth-child(5) { left: 90%; animation-delay: 5s; }
+
+

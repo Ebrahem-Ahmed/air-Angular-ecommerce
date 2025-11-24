@@ -1,0 +1,805 @@
+:root {
+  --adidas-black: #000000;
+  --adidas-white: #ffffff;
+  --adidas-grey: #767676;
+  --adidas-light-grey: #f5f5f5;
+  --adidas-red: #e74c3c;
+  --adidas-green: #28a745;
+  --adidas-blue: #007bff;
+  --border-radius: 0px;
+  --shadow-light: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-hover: 0 8px 25px rgba(0, 0, 0, 0.15);
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Container and Grid */
+.container {
+  max-width: 1400px;
+}
+
+/* Header Section */
+.wishlist-header {
+  padding: 30px 0;
+}
+
+.wishlist-title {
+  font-size: 48px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--adidas-black);
+}
+
+.items-count {
+  color: var(--adidas-grey);
+  font-size: 16px;
+  font-weight: 400;
+  margin-bottom: 0;
+}
+
+/* Loading Overlay */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.loading-spinner-large {
+  color: var(--adidas-black);
+}
+
+/* Wishlist Grid - Responsive using CSS Grid */
+.wishlist-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+/* Product Card */
+.product-card {
+  background: var(--adidas-white);
+  position: relative;
+  transition: var(--transition);
+  border: 1px solid transparent;
+  overflow: hidden;
+}
+
+.product-card:hover {
+  box-shadow: var(--shadow-hover);
+}
+
+/* Action Buttons Container - Fixed positioning */
+.action-buttons-container {
+  top: 8px;
+  left: 0;
+  z-index: 10;
+}
+
+/* Action Buttons - Consistent sizing and styling */
+.btn-action-cart,
+.btn-action-heart {
+  width: 40px;
+  height: 40px;
+  border: none;
+  color: var(--adidas-black);
+  font-size: 16px;
+  transition: var(--transition);
+}
+
+.btn-action-cart:hover:not(:disabled) {
+  color: var(--adidas-white);
+  transform: scale(1.05);
+}
+
+.btn-action-heart {
+  color: var(--adidas-red);
+}
+
+.btn-action-heart:hover {
+  background: var(--adidas-red);
+  color: var(--adidas-white);
+  transform: scale(1.05);
+}
+
+.btn-action-cart:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Sale Badge */
+.sale-badge {
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--adidas-red);
+  color: var(--adidas-white);
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  z-index: 5;
+}
+
+/* Image Container */
+.image-container {
+  position: relative;
+  width: 100%;
+  height: 280px;
+  overflow: hidden;
+  background: var(--adidas-light-grey);
+  cursor: pointer;
+}
+
+.product-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Quick View Overlay */
+.quick-view-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: var(--transition);
+}
+
+.image-container:hover .quick-view-overlay {
+  opacity: 1;
+}
+
+.btn-quick-view {
+  background: var(--adidas-white);
+  color: var(--adidas-black);
+  border: none;
+  padding: 12px 24px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: var(--transition);
+}
+
+.btn-quick-view:hover {
+  background: var(--adidas-black);
+  color: var(--adidas-white);
+}
+
+/* Unavailable Overlay */
+.unavailable-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 8;
+}
+
+.unavailable-text {
+  color: var(--adidas-white);
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: 2px;
+}
+
+/* Product Info */
+.product-info {
+  padding: 16px;
+  text-align: left;
+}
+
+.product-name {
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--adidas-black);
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: var(--transition);
+  line-height: 1.4;
+}
+
+.product-name:hover {
+  color: var(--adidas-blue);
+}
+
+.product-price {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--adidas-black);
+}
+
+.original-price {
+  font-size: 14px;
+}
+
+/* Empty Wishlist State */
+.empty-wishlist {
+  padding: 100px 20px;
+}
+
+.empty-content {
+  max-width: 500px;
+}
+
+.empty-icon {
+  font-size: 80px;
+  color: #ddd;
+  margin-bottom: 30px;
+}
+
+.empty-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--adidas-black);
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.empty-description {
+  font-size: 16px;
+  color: var(--adidas-grey);
+  margin-bottom: 40px;
+  line-height: 1.6;
+}
+
+.btn-shop-now {
+  background: var(--adidas-black);
+  color: var(--adidas-white);
+  border: none;
+  padding: 18px 40px;
+  font-weight: 700;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  transition: var(--transition);
+}
+
+.btn-shop-now:hover {
+  background: #3333331b;
+  color: var(--adidas-white);
+}
+
+/* Back Section */
+.back-section {
+  padding: 40px 0 60px;
+}
+
+.btn-back {
+  background: transparent;
+  color: var(--adidas-black);
+  border: 2px solid var(--adidas-black);
+  padding: 16px 32px;
+  font-weight: 700;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  transition: var(--transition);
+}
+
+.btn-back:hover {
+  background: var(--adidas-black);
+  color: var(--adidas-white);
+  transform: translateY(-2px);
+}
+
+/* Fixed Toast Notifications - Replace the existing toast styles in your SCSS */
+
+/* Toast Container - Fixed positioning and centering */
+.toast-container {
+  z-index: 10000 !important;
+  pointer-events: none;
+  padding: 0 20px;
+
+  /* Ensure proper centering on all screen sizes */
+  .toast {
+    pointer-events: auto;
+    min-width: 300px;
+    max-width: 500px;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+    /* Ensure proper text display */
+    .toast-body {
+      padding: 12px 16px;
+      color: inherit;
+      font-weight: 500;
+
+      span {
+        color: inherit !important;
+        font-weight: inherit;
+      }
+    }
+
+    /* Close button styling */
+    .btn-close {
+      padding: 8px;
+      margin: 0;
+      opacity: 0.8;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
+}
+
+/* Custom Toast Notification Styles - Add this to your SCSS file */
+
+.custom-toast-container {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10000;
+  pointer-events: none;
+  width: 100%;
+  max-width: 500px;
+  padding: 0 20px;
+
+  .custom-toast {
+    pointer-events: auto;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    margin-bottom: 10px;
+    border-left: 4px solid #ccc;
+    animation: slideInDown 0.4s ease-out;
+    min-width: 300px;
+
+    .custom-toast-content {
+      display: flex;
+      align-items: center;
+      padding: 16px;
+
+      .custom-toast-icon {
+        margin-right: 12px;
+        font-size: 20px;
+        min-width: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .custom-toast-message {
+        flex: 1;
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 1.4;
+        color: #333;
+      }
+
+      .custom-toast-close {
+        background: none;
+        border: none;
+        color: #666;
+        font-size: 14px;
+        cursor: pointer;
+        padding: 4px;
+        margin-left: 12px;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+
+        &:hover {
+          background: rgba(0, 0, 0, 0.1);
+          color: #333;
+        }
+      }
+    }
+  }
+
+  /* Success Toast */
+  .custom-toast-success {
+    border-left-color: #28a745;
+    background: #d4edda;
+
+    .custom-toast-icon {
+      color: #28a745;
+    }
+
+    .custom-toast-message {
+      color: #155724;
+    }
+
+    .custom-toast-close {
+      color: #155724;
+
+      &:hover {
+        background: rgba(40, 167, 69, 0.1);
+      }
+    }
+  }
+
+  /* Error Toast */
+  .custom-toast-error {
+    border-left-color: #dc3545;
+    background: #f8d7da;
+
+    .custom-toast-icon {
+      color: #dc3545;
+    }
+
+    .custom-toast-message {
+      color: #721c24;
+    }
+
+    .custom-toast-close {
+      color: #721c24;
+
+      &:hover {
+        background: rgba(220, 53, 69, 0.1);
+      }
+    }
+  }
+
+  /* Warning Toast */
+  .custom-toast-warning {
+    border-left-color: #ffc107;
+    background: #fff3cd;
+
+    .custom-toast-icon {
+      color: #856404;
+    }
+
+    .custom-toast-message {
+      color: #856404;
+    }
+
+    .custom-toast-close {
+      color: #856404;
+
+      &:hover {
+        background: rgba(255, 193, 7, 0.1);
+      }
+    }
+  }
+
+  /* Info Toast */
+  .custom-toast-info {
+    border-left-color: #17a2b8;
+    background: #d1ecf1;
+
+    .custom-toast-icon {
+      color: #17a2b8;
+    }
+
+    .custom-toast-message {
+      color: #0c5460;
+    }
+
+    .custom-toast-close {
+      color: #0c5460;
+
+      &:hover {
+        background: rgba(23, 162, 184, 0.1);
+      }
+    }
+  }
+}
+
+/* Alternative Dark Theme Toasts (if you prefer) */
+.custom-toast-container {
+  /* Success Dark */
+  .custom-toast-success-dark {
+    border-left-color: #28a745;
+    background: #28a745;
+
+    .custom-toast-icon,
+    .custom-toast-message,
+    .custom-toast-close {
+      color: white;
+    }
+
+    .custom-toast-close:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+  }
+
+  /* Error Dark */
+  .custom-toast-error-dark {
+    border-left-color: #dc3545;
+    background: #dc3545;
+
+    .custom-toast-icon,
+    .custom-toast-message,
+    .custom-toast-close {
+      color: white;
+    }
+
+    .custom-toast-close:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+  }
+
+  /* Warning Dark */
+  .custom-toast-warning-dark {
+    border-left-color: #ffc107;
+    background: #ffc107;
+
+    .custom-toast-icon,
+    .custom-toast-message,
+    .custom-toast-close {
+      color: #000;
+    }
+
+    .custom-toast-close:hover {
+      background: rgba(0, 0, 0, 0.1);
+    }
+  }
+
+  /* Info Dark */
+  .custom-toast-info-dark {
+    border-left-color: #17a2b8;
+    background: #17a2b8;
+
+    .custom-toast-icon,
+    .custom-toast-message,
+    .custom-toast-close {
+      color: white;
+    }
+
+    .custom-toast-close:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+  }
+}
+
+/* Animation */
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .custom-toast-container {
+    padding: 0 15px;
+    max-width: calc(100vw - 30px);
+
+    .custom-toast {
+      min-width: 280px;
+
+      .custom-toast-content {
+        padding: 12px;
+
+        .custom-toast-icon {
+          font-size: 18px;
+          margin-right: 10px;
+        }
+
+        .custom-toast-message {
+          font-size: 13px;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 576px) {
+  .custom-toast-container {
+    padding: 0 10px;
+
+    .custom-toast {
+      min-width: 250px;
+    }
+  }
+}
+
+/* Animation for toast appearance */
+.toast.show {
+  animation: slideInDown 0.3s ease-out;
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive toast styles */
+@media (max-width: 768px) {
+  .toast-container {
+    padding: 0 15px;
+
+    .toast {
+      min-width: 280px;
+      max-width: calc(100vw - 30px);
+      font-size: 13px;
+
+      .toast-body {
+        padding: 10px 12px;
+      }
+    }
+  }
+}
+
+@media (max-width: 576px) {
+  .toast-container {
+    padding: 0 10px;
+
+    .toast {
+      min-width: 250px;
+      max-width: calc(100vw - 20px);
+
+      .toast-icon {
+        font-size: 16px !important;
+      }
+    }
+  }
+}
+/* Item States */
+.wishlist-item.selected .product-card {
+  border-color: var(--adidas-blue);
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.wishlist-item.unavailable .product-card {
+  opacity: 0.7;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .wishlist-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 18px;
+  }
+}
+
+@media (max-width: 992px) {
+  .container {
+    padding: 0 30px;
+  }
+
+  .wishlist-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 16px;
+  }
+
+  .wishlist-title {
+    font-size: 40px;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 0 20px;
+  }
+
+  .wishlist-grid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 15px;
+  }
+
+  .wishlist-title {
+    font-size: 36px;
+    letter-spacing: 2px;
+  }
+
+  .image-container {
+    height: 250px;
+  }
+
+  .btn-action-cart,
+  .btn-action-heart {
+    width: 36px;
+    height: 36px;
+    font-size: 14px;
+  }
+
+  .product-info {
+    padding: 12px;
+  }
+
+  .toast-container {
+    padding: 0 15px;
+  }
+}
+
+@media (max-width: 576px) {
+  .container {
+    padding: 0 15px;
+  }
+
+  .wishlist-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .wishlist-title {
+    font-size: 28px;
+    letter-spacing: 1px;
+  }
+
+  .image-container {
+    height: 220px;
+  }
+
+  .btn-action-cart,
+  .btn-action-heart {
+    width: 34px;
+    height: 34px;
+    font-size: 13px;
+  }
+
+  .action-buttons-container {
+    top: 6px;
+  }
+
+  .product-name {
+    font-size: 13px;
+    min-height: 28px;
+  }
+
+  .product-price {
+    font-size: 15px;
+  }
+
+  .empty-title {
+    font-size: 24px;
+  }
+
+  .empty-icon {
+    font-size: 60px;
+  }
+
+  .btn-shop-now,
+  .btn-back {
+    padding: 14px 28px;
+    font-size: 13px;
+  }
+
+  .toast-container {
+    padding: 0 10px;
+  }
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.wishlist-item {
+  animation: fadeInUp 0.5s ease-out;
+}

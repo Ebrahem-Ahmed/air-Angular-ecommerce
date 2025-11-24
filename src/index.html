@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+<title>Air Conditioner Website</title>
+    <base href="/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/x-icon" href="/Icons/adidas_logo.svg" />
+    <!-- Font Awesome for WhatsApp icon -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css"
+      integrity="sha512-DxV+EoADOkOygM4IR9yXP8Sb2qwgidEmeqAEmDKIOfPRQZOWbXCzLC6vjbZyy0vPisbH2SyW27+ddLVCN+OMzQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <style>
+      /* WhatsApp Floating Button Styles */
+      .wa-floating {
+        position: fixed;
+        width: 60px;
+        height: 60px;
+        bottom: 20px;
+        right: 20px;
+        background-color: #25d366;
+        color: #fff;
+        border-radius: 50%;
+        text-align: center;
+        font-size: 28px;
+        box-shadow: 2px 2px 3px rgba(0,0,0,.3);
+        z-index: 9999;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+      }
+      .wa-floating:hover { filter: brightness(0.95); }
+      .wa-floating i { line-height: 1; }
+    </style>
+  </head>
+  <body>
+    <app-root></app-root>
+
+    <!-- WhatsApp Floating Button -->
+    <!-- استبدل 201234567890 برقمك بصيغة دولية بدون + أو فراغات، ويمكن تعديل الرسالة النصية -->
+  <!-- WhatsApp Floating Button -->
+<a
+  class="wa-floating"
+  href="https://wa.me/201033914720?text=Hello%20I%20want%20to%20know%20more"
+  target="_blank"
+  rel="noopener"
+  aria-label="Contact on WhatsApp"
+>
+  <i class="fa-brands fa-whatsapp" aria-hidden="true"></i>
+</a>
+
+  </body>
+</html>

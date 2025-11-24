@@ -1,0 +1,29 @@
+<!-- Footer Section -->
+<footer class="footer bg-dark text-white py-5">
+
+  <!-- Footer Bottom -->
+  <div class="footer-bottom">
+    <div class="container-fluid py-3">
+      <div class="row align-items-center">
+        <div class="col-12 text-center">
+          <nav class="footer-bottom-nav">
+            <ng-container
+              *ngFor="let link of footerLinks; let i = index; let last = last"
+            >
+              <a
+                href="#"
+                class="text-white-50 text-decoration-none small me-2"
+                (click)="onLegalLinkClick(link)"
+              >
+                {{ "FOOTER.LEGAL_LINKS." + i | translate }}
+              </a>
+              <span *ngIf="!last" class="text-white-50 me-2 d-none d-md-inline"
+                >|</span
+              >
+            </ng-container>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>

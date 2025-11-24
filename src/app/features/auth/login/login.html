@@ -1,0 +1,379 @@
+<div class="container-fluid p-0">
+  <div class="row container-of-login g-0 flex-column flex-lg-row">
+    <!-- Left Column - Login Form -->
+    <div
+      class="col-12 col-lg-6 col-xl-7 d-flex pt-4 justify-content-center bg-white"
+    >
+      <div class="w-100 px-0 px-lg-5">
+        <h1 class="h2 fw-bold mb-4">{{ "LOGIN.TITLE" | translate }}</h1>
+
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
+          <!-- Email Field -->
+          <div class="mb-3">
+            <label for="email" class="form-label">
+              {{ "LOGIN.EMAIL" | translate }} <span class="text-danger">*</span>
+            </label>
+            <input
+              type="email"
+              class="form-control form-control-lg"
+              [class.is-invalid]="
+                loginForm.get('email')?.invalid &&
+                loginForm.get('email')?.touched
+              "
+              id="email"
+              formControlName="email"
+              [placeholder]="'LOGIN.EMAIL_PLACEHOLDER' | translate"
+            />
+            <div
+              class="invalid-feedback"
+              *ngIf="
+                loginForm.get('email')?.invalid &&
+                loginForm.get('email')?.touched
+              "
+            >
+              <small *ngIf="loginForm.get('email')?.errors?.['required']">
+                {{ "LOGIN.VALIDATION.EMAIL_REQUIRED" | translate }}
+              </small>
+              <small *ngIf="loginForm.get('email')?.errors?.['email']">
+                {{ "LOGIN.VALIDATION.EMAIL_INVALID" | translate }}
+              </small>
+            </div>
+          </div>
+
+          <!-- Password Field -->
+          <div class="mb-3">
+            <label for="password" class="form-label">
+              {{ "LOGIN.PASSWORD" | translate }}
+              <span class="text-danger">*</span>
+            </label>
+            <div class="position-relative">
+              <input
+                [type]="showPassword ? 'text' : 'password'"
+                class="form-control form-control-lg pe-5"
+                id="password"
+                formControlName="password"
+                [placeholder]="'LOGIN.PASSWORD_PLACEHOLDER' | translate"
+              />
+              <button
+                type="button"
+                class="btn btn-link position-absolute end-0 top-50 translate-middle-y me-2 text-decoration-none text-dark"
+                (click)="togglePassword()"
+                style="z-index: 10"
+              >
+                <small class="text-uppercase fw-bold">{{
+                  showPassword
+                    ? ("LOGIN.HIDE" | translate)
+                    : ("LOGIN.SHOW" | translate)
+                }}</small>
+              </button>
+            </div>
+            <div class="text-end mt-2">
+              <button
+                type="button"
+                class="btn btn-link p-0 text-dark text-decoration-underline"
+                (click)="openForgotPasswordModal()"
+              >
+                <small class="text-uppercase">{{
+                  "LOGIN.FORGOT_PASSWORD" | translate
+                }}</small>
+              </button>
+            </div>
+          </div>
+
+          <!-- Keep me logged in -->
+          <div class="form-check mb-4">
+            <input
+              class="form-check-input border-dark border-2 rounded-0"
+              type="checkbox"
+              id="keepLoggedIn"
+              formControlName="keepLoggedIn"
+            />
+            <label class="form-check-label" for="keepLoggedIn">
+              {{ "LOGIN.KEEP_LOGGED_IN" | translate }}
+              <a href="#" class="text-dark text-decoration-underline">{{
+                "LOGIN.MORE_INFO" | translate
+              }}</a>
+            </label>
+          </div>
+
+          <!-- Login Button -->
+          <button
+            type="submit"
+            class="fancy-btn btn btn-dark btn-lg text-uppercase fw-bold mb-4 rounded-0"
+            [disabled]="loginForm.invalid || isLoading"
+          >
+            <span *ngIf="!isLoading">
+              {{ "LOGIN.LOGIN_BUTTON" | translate }}
+              <svg width="16" height="16" viewBox="0 0 16 16" class="ms-2">
+                <path
+                  d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"
+                  fill="white"
+                />
+              </svg>
+            </span>
+            <span
+              *ngIf="isLoading"
+              class="spinner-border spinner-border-sm me-2"
+            ></span>
+            <span *ngIf="isLoading">{{ "LOGIN.LOGGING_IN" | translate }}</span>
+          </button>
+
+          <!-- Error Message -->
+          <div class="alert alert-danger" *ngIf="errorMessage">
+            {{ errorMessage }}
+          </div>
+
+          <!-- Social Login -->
+          <div class="row g-2 mb-4">
+            <div class="col-12">
+              <button
+                type="button"
+                class="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center rounded-0 border-2 border-black"
+                (click)="onGoogleSignIn()"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" class="me-2">
+                  <path
+                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                    fill="#4285F4"
+                  />
+                  <path
+                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                    fill="#34A853"
+                  />
+                  <path
+                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                    fill="#FBBC05"
+                  />
+                  <path
+                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                    fill="#EA4335"
+                  />
+                </svg>
+                <small class="text-uppercase fw-bold text-black my-2">{{
+                  "LOGIN.GOOGLE" | translate
+                }}</small>
+              </button>
+            </div>
+          </div>
+
+          <!-- Terms -->
+          <p class="small text-muted">
+            {{ "LOGIN.TERMS_PREFIX" | translate }}
+            <a href="#" class="text-dark text-decoration-underline">{{
+              "LOGIN.ADICLUB_TERMS" | translate
+            }}</a>
+            {{ "LOGIN.TERMS_AND" | translate }}
+            <a href="#" class="text-dark text-decoration-underline">{{
+              "LOGIN.PRIVACY_NOTICE" | translate
+            }}</a>
+          </p>
+        </form>
+      </div>
+    </div>
+
+    <!-- Right Column - Promotional Content -->
+    <div
+      class="col-12 col-lg-6 col-xl-5 d-flex align-items-center justify-content-center bg-white"
+    >
+      <div class="">
+        <div class="mb-1">
+          <h2 class="display-6 fw-bold mb-3">
+            {{ "LOGIN.ADICLUB_TITLE" | translate }}
+          </h2>
+          <p class="lead mb-1">
+            {{ "LOGIN.ADICLUB_DESCRIPTION" | translate }}
+          </p>
+        </div>
+
+        <div class="row text-start mb-1">
+          <div class="col-12 mb-2">
+            <div class="d-flex align-items-center">
+              <svg width="16" height="16" class="me-3 text-success">
+                <path
+                  d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"
+                  fill="currentColor"
+                />
+              </svg>
+              <span>{{ "LOGIN.BENEFITS.VOUCHER" | translate }}</span>
+            </div>
+          </div>
+          <div class="col-12 mb-2">
+            <div class="d-flex align-items-center">
+              <svg width="16" height="16" class="me-3 text-success">
+                <path
+                  d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"
+                  fill="currentColor"
+                />
+              </svg>
+              <span>{{ "LOGIN.BENEFITS.MEMBERS_ONLY" | translate }}</span>
+            </div>
+          </div>
+          <div class="col-12 mb-2">
+            <div class="d-flex align-items-center">
+              <svg width="16" height="16" class="me-3 text-success">
+                <path
+                  d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"
+                  fill="currentColor"
+                />
+              </svg>
+              <span>{{ "LOGIN.BENEFITS.APPS_ACCESS" | translate }}</span>
+            </div>
+          </div>
+          <div class="col-12 mb-4">
+            <div class="d-flex align-items-center">
+              <svg width="16" height="16" class="me-3 text-success">
+                <path
+                  d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"
+                  fill="currentColor"
+                />
+              </svg>
+              <span>{{ "LOGIN.BENEFITS.SPECIAL_OFFERS" | translate }}</span>
+            </div>
+          </div>
+        </div>
+
+        <p class="mb-3">
+          {{ "LOGIN.JOIN_NOW_TEXT" | translate }}
+        </p>
+
+        <button
+          class="btn fancy-btn rounded-0 btn-dark btn-lg text-uppercase fw-bold px-5"
+          (click)="goToRegister()"
+        >
+          {{ "LOGIN.REGISTER_NOW" | translate }}
+          <svg width="16" height="16" viewBox="0 0 16 16" class="ms-2">
+            <path
+              d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"
+              fill="white"
+            />
+          </svg>
+        </button>
+
+        <!-- Promotional Images -->
+        <div class="row mt-3">
+          <div class="col-12">
+            <img
+              src="/Icons/images.jpeg"
+              class="img-fluid rounded"
+              [alt]="'LOGIN.ADIDAS_PROMOTION_ALT' | translate"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Enhanced Forgot Password Modal -->
+  <div
+    class="modal"
+    [class.show]="showForgotPassword"
+    [style.display]="showForgotPassword ? 'block' : 'none'"
+    *ngIf="showForgotPassword"
+    (click)="closeForgotPassword($event)"
+  >
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header border-0">
+          <h5 class="modal-title fw-bold">
+            {{ "LOGIN.FORGOT_PASSWORD_MODAL.TITLE" | translate }}
+          </h5>
+          <button
+            type="button"
+            class="btn-close"
+            (click)="showForgotPassword = false"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <!-- Success Message -->
+          <div
+            class="alert alert-success d-flex align-items-center"
+            *ngIf="forgotPasswordSuccess"
+          >
+            <svg width="24" height="24" class="me-2 text-success">
+              <path
+                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"
+                fill="currentColor"
+              />
+            </svg>
+            <div>
+              <strong>Email Sent Successfully!</strong><br />
+              <small>{{ forgotPasswordMessage }}</small>
+            </div>
+          </div>
+
+          <!-- Error Message -->
+          <div
+            class="alert alert-danger"
+            *ngIf="forgotPasswordMessage && !forgotPasswordSuccess"
+          >
+            {{ forgotPasswordMessage }}
+          </div>
+
+          <!-- Form (hide when success) -->
+          <div *ngIf="!forgotPasswordSuccess">
+            <p class="mb-3">
+              {{ "LOGIN.FORGOT_PASSWORD_MODAL.DESCRIPTION" | translate }}
+            </p>
+
+            <form
+              [formGroup]="forgotPasswordForm"
+              (ngSubmit)="onForgotPassword()"
+            >
+              <div class="mb-3">
+                <label for="resetEmail" class="form-label">
+                  {{ "LOGIN.EMAIL" | translate }}
+                  <span class="text-danger">*</span>
+                </label>
+                <input
+                  type="email"
+                  class="form-control form-control-lg"
+                  [class.is-invalid]="
+                    forgotPasswordForm.get('email')?.invalid &&
+                    forgotPasswordForm.get('email')?.touched
+                  "
+                  id="resetEmail"
+                  formControlName="email"
+                  [placeholder]="'LOGIN.EMAIL_PLACEHOLDER' | translate"
+                />
+                <div
+                  class="invalid-feedback"
+                  *ngIf="
+                    forgotPasswordForm.get('email')?.invalid &&
+                    forgotPasswordForm.get('email')?.touched
+                  "
+                >
+                  <small>{{
+                    "LOGIN.VALIDATION.EMAIL_INVALID" | translate
+                  }}</small>
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                class="btn fancy-btn rounded-0 btn-dark btn-lg w-100 text-uppercase fw-bold"
+                [disabled]="
+                  forgotPasswordForm.invalid || isForgotPasswordLoading
+                "
+              >
+                <span *ngIf="!isForgotPasswordLoading">
+                  {{ "LOGIN.FORGOT_PASSWORD_MODAL.RESET_BUTTON" | translate }}
+                  <svg width="16" height="16" viewBox="0 0 16 16" class="ms-2">
+                    <path
+                      d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"
+                      fill="white"
+                    />
+                  </svg>
+                </span>
+                <span
+                  *ngIf="isForgotPasswordLoading"
+                  class="spinner-border spinner-border-sm me-2"
+                ></span>
+                <span *ngIf="isForgotPasswordLoading">Sending...</span>
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

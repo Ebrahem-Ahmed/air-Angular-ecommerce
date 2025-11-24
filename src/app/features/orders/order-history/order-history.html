@@ -1,0 +1,106 @@
+
+  <div class="container-fluid px-4 py-4">
+      <!-- Header -->
+      <div class="row mb-4">
+        <div class="col-12">
+          <h2 class="fw-bold text-uppercase mb-3">ORDER HISTORY</h2>
+          
+          <!-- Breadcrumb -->
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item">
+                <a href="#" class="text-decoration-none text-dark">Home</a>
+              </li>
+              <li class="breadcrumb-item active text-muted" aria-current="page">
+                My Account
+              </li>
+            </ol>
+          </nav>
+        </div>
+      </div>
+
+      <!-- Filter Dropdown -->
+      <div class="row mb-4">
+        <div class="col-12 d-flex justify-content-end">
+          <div class="dropdown">
+            <select class="form-select" style="width: auto;">
+              <option selected>Last 3 months</option>
+              <option value="1">Last month</option>
+              <option value="6">Last 6 months</option>
+              <option value="12">Last year</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Order Card -->
+      <div class="row">
+        <div class="col-12">
+          <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white border-0 py-3">
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="fw-medium">
+                  Order Number: <span class="fw-bold">{{ currentOrder.orderNumber }}</span>
+                </span>
+                <button class="btn btn-outline-dark btn-sm px-4">VIEW</button>
+              </div>
+            </div>
+            
+            <div class="card-body p-0">
+              <div class="row g-0">
+                <!-- Product Image -->
+                <div class="col-md-3 p-4">
+                  <div class="d-flex justify-content-center align-items-center" 
+                       style="height: 200px; background-color: #f8f9fa;">
+                    <img 
+                      [src]="currentOrder.productImage" 
+                      alt="Product Image"
+                      class="img-fluid"
+                      style="max-height: 150px; object-fit: contain;">
+                  </div>
+                </div>
+                
+                <!-- Order Details -->
+                <div class="col-md-6 p-4">
+                  <div class="h-100 d-flex flex-column justify-content-center">
+                    <div class="mb-2">
+                      <span class="text-muted">Date Ordered:</span>
+                      <span class="fw-medium ms-1">{{ currentOrder.dateOrdered }}</span>
+                    </div>
+                    <div class="mb-2">
+                      <span class="text-muted">Order Status:</span>
+                      <span class="fw-medium ms-1">{{ currentOrder.orderStatus }}</span>
+                    </div>
+                    <div>
+                      <span class="text-muted">Shipped to:</span>
+                      <span class="fw-medium ms-1">{{ currentOrder.shippedTo }}</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Order Summary -->
+                <div class="col-md-3 p-4 border-start">
+                  <div class="h-100 d-flex flex-column justify-content-end">
+                    <div class="mb-3">
+                      <div class="fw-medium">TOTAL ITEMS: {{ currentOrder.totalItems }}</div>
+                    </div>
+                    <div>
+                      <div class="fw-bold">TOTAL: {{ currentOrder.total }}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Back Button -->
+      <div class="row">
+        <div class="col-12 text-center">
+          <button class="btn btn-link text-dark text-decoration-none fw-medium">
+            BACK TO MY ACCOUNT
+          </button>
+        </div>
+      </div>
+    </div>

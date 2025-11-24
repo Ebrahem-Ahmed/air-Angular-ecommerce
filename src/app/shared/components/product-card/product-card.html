@@ -1,0 +1,297 @@
+<article
+  class="product-card position-relative overflow-hidden bg-white"
+  [class]="cardClasses()"
+  [@cardEnterAnimation]="cardState()"
+  (@cardEnterAnimation.done)="onAnimationComplete()"
+  (mouseenter)="onHover(true)"
+  (mouseleave)="onHover(false)"
+  (click)="onCardClick()"
+>
+  <!-- Loading Skeleton -->
+  @if (isLoading()) {
+  <div class="product-card-skeleton">
+    <div class="skeleton-image"></div>
+    <div class="skeleton-content p-3">
+      <div class="skeleton-line mb-2"></div>
+      <div class="skeleton-line mb-2 w-75"></div>
+      <div class="skeleton-line w-50"></div>
+    </div>
+  </div>
+  }
+
+  <!-- Product Content -->
+  @if (!isLoading() && product()) {
+  <!-- Image Container -->
+  <div class="product-image-container position-relative overflow-hidden">
+    <!-- Main Product Image -->
+    <img
+      [src]="currentImage()"
+      [alt]="product()?.name"
+      class="product-image w-100 h-100 object-fit-cover transition-all"
+      [class.loaded]="imageLoaded()"
+      (load)="onImageLoad()"
+      (error)="onImageError()"
+      loading="lazy"
+      [@imageAnimation]="imageLoaded() ? 'loaded' : 'loading'"
+    />
+
+    <!-- Hover Image -->
+    @if (product()?.hoverImageUrl && config().enableHoverEffects) {
+    <img
+      [src]="product()!.hoverImageUrl!"
+      [alt]="product()?.name + ' hover'"
+      class="product-image-hover position-absolute top-0 start-0 w-100 h-100 object-fit-cover"
+      [class.show]="isHovered() && hoverImageLoaded()"
+      (load)="onHoverImageLoad()"
+      loading="lazy"
+      [@fadeInOut]="isHovered() && hoverImageLoaded() ? 'visible' : 'hidden'"
+    />
+    }
+
+    <!-- Product Badges -->
+    @if (config().showBadges) {
+    <div
+      class="product-badges position-absolute top-0 start-0 m-3 d-flex flex-column gap-2"
+    >
+      @if (product()?.discount) {
+      <span class="badge bg-dark text-white small fw-bold px-2 py-1">
+        {{ product()!.discount }}
+      </span>
+      } @if (product()?.isNew) {
+      <span class="badge bg-success text-white small fw-bold px-2 py-1">
+        NEW
+      </span>
+      } @if (product()?.isExclusive) {
+      <span class="badge bg-warning text-dark small fw-bold px-2 py-1">
+        EXCLUSIVE
+      </span>
+      } @if (product()?.isLimitedEdition) {
+      <span class="badge bg-danger text-white small fw-bold px-2 py-1">
+        LIMITED
+      </span>
+      } @if (product()?.sustainability?.isEcoFriendly) {
+      <span
+        class="badge bg-success text-white small fw-bold px-2 py-1 d-flex align-items-center gap-1"
+      >
+        <i class="bi bi-leaf-fill"></i>
+        ECO
+      </span>
+      } @if (product()?.quickShip) {
+      <span
+        class="badge bg-primary text-white small fw-bold px-2 py-1 d-flex align-items-center gap-1"
+      >
+        <i class="bi bi-lightning-fill"></i>
+        QUICK SHIP
+      </span>
+      }
+    </div>
+    }
+
+    <!-- Wishlist Button -->
+    @if (config().showWishlistButton) {
+    <button
+      class="wishlist-button position-absolute top-0 end-0 m-3 btn btn-light rounded-circle p-2 border-0"
+      [class.active]="isWishlisted()"
+      (click)="toggleWishlist($event)"
+      [@heartBeat]="wishlistState()"
+      type="button"
+      aria-label="Add to wishlist"
+    >
+      <i
+        [class]="
+          isWishlisted() ? 'bi bi-heart-fill text-danger' : 'bi bi-heart'
+        "
+      ></i>
+    </button>
+    }
+
+    <!-- Quick Actions Overlay -->
+    @if (config().showQuickActions && isHovered()) {
+    <div
+      class="quick-actions-overlay position-absolute bottom-0 start-0 w-100 p-3"
+      [@slideUpFade]="isHovered() ? 'visible' : 'hidden'"
+    >
+      <div class="row g-2">
+        <div class="col-6">
+          <button
+            class="btn btn-dark w-100 btn-sm fw-semibold text-uppercase"
+            (click)="onQuickView($event)"
+            type="button"
+          >
+            <i class="bi bi-eye me-2"></i>
+            Quick View
+          </button>
+        </div>
+        <div class="col-6">
+          <button
+            class="btn btn-outline-dark w-100 btn-sm fw-semibold text-uppercase"
+            (click)="onQuickAdd($event)"
+            type="button"
+            [disabled]="product()?.stockStatus === 'out-of-stock'"
+          >
+            <i class="bi bi-bag-plus me-2"></i>
+            Quick Add
+          </button>
+        </div>
+      </div>
+    </div>
+    }
+
+    <!-- Color Options -->
+    @if (config().showColorOptions && product()?.colorOptions && isHovered()) {
+    <div
+      class="color-options position-absolute bottom-0 start-0 w-100 p-3"
+      [@slideUpFade]="isHovered() ? 'visible' : 'hidden'"
+      style="bottom: 60px"
+    >
+      <div class="d-flex gap-2 justify-content-center flex-wrap">
+        @for (color of product()!.colorOptions!.slice(0, 5); track color.name) {
+        <button
+          class="color-swatch rounded-circle border border-2"
+          [style.background-color]="color.hex"
+          [class.border-dark]="selectedColor() === color.name"
+          (click)="selectColor($event, color)"
+          type="button"
+          [attr.aria-label]="'Select ' + color.name + ' color'"
+        ></button>
+        } @if (product()!.colorOptions!.length > 5) {
+        <span class="text-white small fw-semibold align-self-center">
+          +{{ product()!.colorOptions!.length - 5 }}
+        </span>
+        }
+      </div>
+    </div>
+    }
+
+    <!-- Stock Status Indicator -->
+    @if (product()?.stockStatus === 'low-stock') {
+    <div class="stock-indicator position-absolute bottom-0 end-0 m-3">
+      <span class="badge bg-warning text-dark small">
+        <i class="bi bi-exclamation-triangle-fill me-1"></i>
+        Low Stock
+      </span>
+    </div>
+    } @if (product()?.stockStatus === 'out-of-stock') {
+    <div
+      class="stock-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-white bg-opacity-75"
+    >
+      <span class="badge bg-secondary fs-6 px-3 py-2">OUT OF STOCK</span>
+    </div>
+    }
+  </div>
+
+  <!-- Product Information -->
+  <div class="product-info p-3">
+    <!-- Rating -->
+    @if (config().showRating && product()?.rating) {
+    <div class="product-rating d-flex align-items-center gap-2 mb-2">
+      <div class="stars d-flex">
+        @for (star of [1,2,3,4,5]; track star) {
+        <i
+          [class]="
+            star <= product()!.rating!
+              ? 'bi bi-star-fill text-warning'
+              : 'bi bi-star text-muted'
+          "
+          style="font-size: 0.75rem"
+        ></i>
+        }
+      </div>
+      <span class="text-muted small">({{ product()!.reviewCount || 0 }})</span>
+    </div>
+    }
+
+    <!-- Category -->
+    <div class="product-category">
+      <span class="text-muted small text-uppercase fw-medium">
+        {{ product()!.category }}
+        @if (product()?.subcategory) { • {{ product()!.subcategory }}
+        }
+      </span>
+    </div>
+
+    <!-- Product Name -->
+    <h3 class="product-name h6 fw-bold text-dark mt-2 mb-2 text-uppercase">
+      {{ product()!.name }}
+    </h3>
+
+    <!-- Pricing -->
+    <div class="product-pricing mb-2">
+      <div class="d-flex align-items-baseline gap-2">
+        <span class="current-price fw-bold fs-6 text-dark">
+          EGP {{ formatPrice(product()!.price) }}
+        </span>
+        <!-- @if (product()?.originalPrice && product()!.originalPrice >
+        product()!.price) {
+        <span
+          class="original-price text-muted text-decoration-line-through small"
+        >
+          EGP {{ formatPrice(product()!.originalPrice) }}
+        </span>
+        } -->
+      </div>
+      <!-- @if (product()?.originalPrice && product()!.originalPrice >
+      product()!.price) {
+      <div class="savings text-success small fw-medium">
+        Save EGP {{ formatPrice(product()!.originalPrice - product()!.price) }}
+      </div>
+      } -->
+    </div>
+
+    <!-- Colors Info -->
+    <!-- @if (product()?.colors && product()!.colors.length > 0) {
+    <div class="product-colors text-muted small mb-2">
+      {{ product()!.colors.length }} Color{{
+        product()!.colors.length > 1 ? "s" : ""
+      }}
+    </div>
+    } -->
+
+    <!-- Size Options (Compact) -->
+    @if (config().showSizeOptions && product()?.availableSizes) {
+    <div class="size-options-compact">
+      <div class="d-flex gap-1 flex-wrap">
+        @for (size of product()!.availableSizes!.slice(0, 4); track size) {
+        <button
+          class="btn btn-outline-secondary btn-sm px-2 py-1"
+          style="font-size: 0.7rem; min-width: 35px"
+          (click)="selectSize($event, size)"
+          type="button"
+        >
+          {{ size }}
+        </button>
+        } @if (product()!.availableSizes!.length > 4) {
+        <span class="text-muted small align-self-center">
+          +{{ product()!.availableSizes!.length - 4 }}
+        </span>
+        }
+      </div>
+    </div>
+    }
+
+    <!-- Product Tags -->
+    <!-- @if (product()?.tags && product()!.tags?.length > 0) {
+    <div class="product-tags mt-2">
+      <div class="d-flex gap-1 flex-wrap">
+        @for (tag of product()!.tags?.slice(0, 2); track tag) {
+        <span class="badge bg-light text-dark border small">
+          {{ tag }}
+        </span>
+        }
+      </div>
+    </div>
+    } -->
+  </div>
+  }
+
+  <!-- Loading Indicator -->
+  @if (isProcessing()) {
+  <div
+    class="processing-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-white bg-opacity-75"
+  >
+    <div class="spinner-border text-dark" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+  }
+</article>

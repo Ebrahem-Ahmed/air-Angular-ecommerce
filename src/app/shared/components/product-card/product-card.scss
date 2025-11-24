@@ -1,0 +1,163 @@
+// components/product-card/product-card.component.scss
+
+// Design tokens
+:root {
+  --product-card-border-radius: 0;
+  --product-card-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --product-card-shadow-hover: 0 12px 32px rgba(0, 0, 0, 0.16);
+  --product-card-transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --product-card-hover-transform: translateY(-8px);
+  --adidas-black: #000000;
+  --adidas-white: #ffffff;
+  --adidas-gray-100: #f8f9fa;
+  --adidas-gray-200: #e9ecef;
+  --adidas-gray-300: #dee2e6;
+  --adidas-gray-400: #ced4da;
+  --adidas-gray-500: #adb5bd;
+  --adidas-gray-600: #6c757d;
+  --adidas-gray-700: #495057;
+  --adidas-gray-800: #343a40;
+  --adidas-gray-900: #212529;
+}
+
+// Main card component
+.product-card {
+  background: var(--adidas-white);
+  border-radius: var(--product-card-border-radius);
+  overflow: hidden;
+  transition: var(--product-card-transition);
+  cursor: pointer;
+  box-shadow: var(--product-card-shadow);
+  border: 1px solid transparent;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  // Hover effects
+  &:hover:not(.product-card--loading) {
+    box-shadow: var(--product-card-shadow-hover);
+    transform: var(--product-card-hover-transform);
+    border-color: var(--adidas-gray-300);
+  }
+
+  // States
+  &.product-card--loading {
+    pointer-events: none;
+  }
+
+  &.product-card--out-of-stock {
+    opacity: 0.7;
+    
+    &:hover {
+      transform: none;
+      box-shadow: var(--product-card-shadow);
+    }
+  }
+
+  &.product-card--new {
+    &::before {
+      content: '';
+      position: absolute;
+      top: -1px;
+      left: -1px;
+      right: -1px;
+      bottom: -1px;
+      background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+      border-radius: var(--product-card-border-radius);
+      z-index: -1;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    &:hover::before {
+      opacity: 0.1;
+    }
+  }
+
+  // Layout variants
+  &.product-card--compact {
+    .product-info {
+      padding: 1rem;
+    }
+  }
+
+  &.product-card--large {
+    .product-image-container {
+      aspect-ratio: 4/5;
+    }
+    
+    .product-info {
+      padding: 1.5rem;
+    }
+  }
+
+  &.product-card--minimal {
+    box-shadow: none;
+    border: none;
+    
+    &:hover {
+      box-shadow: var(--product-card-shadow);
+      transform: translateY(-2px);
+    }
+  }
+}
+
+// Loading skeleton
+.product-card-skeleton {
+  .skeleton-image {
+    width: 100%;
+    aspect-ratio: 1;
+    background: linear-gradient(
+      90deg,
+      var(--adidas-gray-100) 25%,
+      var(--adidas-gray-200) 50%,
+      var(--adidas-gray-100) 75%
+    );
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.8s infinite;
+  }
+
+  .skeleton-line {
+    height: 0.875rem;
+    background: linear-gradient(
+      90deg,
+      var(--adidas-gray-100) 25%,
+      var(--adidas-gray-200) 50%,
+      var(--adidas-gray-100) 75%
+    );
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.8s infinite;
+    border-radius: 0.25rem;
+  }
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+// Image container
+.product-image-container {
+  aspect-ratio: 1;
+  background: linear-gradient(135deg, var(--adidas-gray-100) 0%, var(--adidas-gray-200) 100%);
+  flex-shrink: 0;
+}
+
+.product-image {
+  transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  
+  &.loaded {
+    opacity: 1;
+  }
+}
+
+.product-image-hover {
+  opacity: 0;
+  transition:
+    opacity 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}

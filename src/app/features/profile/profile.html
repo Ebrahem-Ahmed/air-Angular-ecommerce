@@ -1,0 +1,866 @@
+<div class="dashboard-container">
+  <div class="header">
+    <h1>{{ "PROFILE.TITLE" | translate }}</h1>
+    <div class="breadcrumb">
+      <a href="#" class="breadcrumb-link">{{
+        "CATEGORY.BREADCRUMB.HOME" | translate
+      }}</a>
+      / {{ "PROFILE.BREADCRUMB" | translate }}
+    </div>
+  </div>
+
+  <div class="main-content">
+    <!-- LEFT PANEL -->
+    <div class="left-panel">
+      <!-- Personal Information -->
+      <div class="section-card">
+        <div class="section-header">
+          <h2>{{ "PROFILE.PERSONAL_INFORMATION" | translate }}</h2>
+        </div>
+        <div class="section-content">
+          <p class="description">
+            {{ "PROFILE.EDIT_DETAILS_DESC" | translate }}
+          </p>
+
+          <div class="details-section">
+            <div class="details-header">
+              <h3>{{ "PROFILE.DETAILS" | translate }}</h3>
+              <button
+                type="button"
+                class="edit-link"
+                data-bs-toggle="modal"
+                data-bs-target="#editProfileModal"
+              >
+                {{ "COMMON.EDIT" | translate }}
+              </button>
+            </div>
+
+            <div class="user-info">
+              <div class="info-item">{{ customerDisplayName }}</div>
+              <div class="info-item">{{ customerBirthDate }}</div>
+              <div class="info-item">{{ customerEmail }}</div>
+              <div class="info-item" *ngIf="customerPhone">
+                {{ customerPhone }}
+              </div>
+            </div>
+
+            <div class="mobile-add-section" *ngIf="!customerPhone">
+              <span class="mobile-text">{{
+                "PROFILE.ADD_MOBILE_TEXT" | translate
+              }}</span>
+              <button
+                type="button"
+                class="add-mobile-button border-0"
+                data-bs-toggle="modal"
+                data-bs-target="#addMobileModal"
+              >
+                {{ "PROFILE.ADD_MOBILE_NUMBER" | translate }}
+              </button>
+            </div>
+
+            <div class="mobile-add-section" *ngIf="customerPhone">
+              <span class="mobile-text border-0">{{
+                "PROFILE.UPDATE_MOBILE_TEXT" | translate
+              }}</span>
+              <button
+                type="button"
+                class="add-mobile-button"
+                data-bs-toggle="modal"
+                data-bs-target="#addMobileModal"
+              >
+                {{ "PROFILE.UPDATE_MOBILE_NUMBER" | translate }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Address Book -->
+      <div class="section-card address-book-card">
+        <div class="address-book-content">
+          <h2>{{ "PROFILE.ADDRESS_BOOK" | translate }}</h2>
+          <button
+            type="button"
+            class="add-new-button"
+            (click)="openAddAddressDialog()"
+          >
+            {{ "PROFILE.ADD_NEW" | translate }}
+          </button>
+        </div>
+
+        <!-- Loading state -->
+        <div *ngIf="isLoadingAddresses()" class="text-center p-3">
+          <div class="spinner-border spinner-border-sm" role="status">
+            <span class="visually-hidden">{{
+              "COMMON.LOADING" | translate
+            }}</span>
+          </div>
+          <span class="ms-2">{{
+            "PROFILE.LOADING_ADDRESSES" | translate
+          }}</span>
+        </div>
+
+        <!-- No addresses state -->
+        <div
+          *ngIf="!isLoadingAddresses() && !hasAddresses"
+          class="text-center p-3 text-muted"
+        >
+          {{ "PROFILE.NO_ADDRESSES" | translate }}
+        </div>
+
+        <!-- Addresses list -->
+        <div *ngIf="hasAddresses" class="addresses-list">
+          <div
+            *ngFor="let addr of addresses()"
+            class="address-item mb-3 p-3 border rounded"
+          >
+            <div class="address-content">
+              <p class="address-text mb-2">{{ getAddressSummary(addr) }}</p>
+              <div class="address-badges mb-2">
+                <span
+                  *ngIf="addr.isDefault"
+                  class="badge bg-secondary rounded-0 border-0 me-2"
+                  >{{ "PROFILE.DEFAULT" | translate }}</span
+                >
+                <span *ngIf="addr.addressType" class="rounded-0">{{
+                  addr.addressType
+                }}</span>
+              </div>
+              <div class="address-actions">
+                <button
+                  type="button"
+                  class="btn btn-sm add-new-button rounded-0 me-2"
+                  (click)="openEditAddressDialog(addr)"
+                >
+                  {{ "COMMON.EDIT" | translate }}
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-sm add-new-button rounded-0 me-2"
+                  (click)="onSetDefaultAddress(addr)"
+                  [disabled]="addr.isDefault"
+                >
+                  {{
+                    addr.isDefault
+                      ? ("PROFILE.DEFAULT" | translate)
+                      : ("PROFILE.SET_DEFAULT" | translate)
+                  }}
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-sm add-new-button rounded-0"
+                  (click)="onDeleteAddress(addr)"
+                  [disabled]="addr.isDefault && addresses().length === 1"
+                >
+                  {{ "COMMON.DELETE" | translate }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="right-panel">
+      <!-- Wishlist -->
+      <div class="wishlist-section">
+        <div class="wishlist-header">
+          <h2>
+            {{ "WISHLIST.TITLE" | translate }} ({{ wishlistItemCount() }})
+          </h2>
+          <button
+            type="button"
+            class="view-all-link"
+            (click)="onViewAllWishlist()"
+            *ngIf="hasWishlistItems"
+          >
+            {{ "PROFILE.VIEW_ALL" | translate }}
+          </button>
+        </div>
+        <div class="wishlist-content">
+          <!-- Loading state -->
+          <div
+            *ngIf="wishlistItems().length === 0 && !hasWishlistItems"
+            class="text-center p-3 text-muted"
+          >
+            <p>{{ "PROFILE.NO_WISHLIST_ITEMS" | translate }}</p>
+            <p class="small">{{ "PROFILE.ADD_ITEMS_WISHLIST" | translate }}</p>
+          </div>
+
+          <!-- Wishlist items -->
+          <div
+            *ngFor="let item of recentWishlistItems"
+            class="wishlist-item mb-2"
+          >
+            <div class="product-image">
+              <img
+                [src]="item.imageUrl || 'assets/images/product-placeholder.png'"
+                [alt]="item.productName"
+                class="img-fluid rounded w-100 h-100"
+                style="width: 60px; height: 60px; object-fit: cover"
+                onerror="this.src='assets/images/product-placeholder.png'"
+              />
+            </div>
+            <div class="product-info flex-grow-1">
+              <div class="product-name" [title]="item.productName">
+                {{ truncateText(item.productName, 25) }}
+              </div>
+              <div class="product-pricing">
+                <span class="current-price">{{ formatPrice(item.price) }}</span>
+                <span
+                  *ngIf="item.originalPrice && item.originalPrice > item.price"
+                  class="old-price text-muted text-decoration-line-through ms-1"
+                >
+                  {{ formatPrice(item.originalPrice) }}
+                </span>
+              </div>
+            </div>
+            <div class="product-actions">
+              <button
+                type="button"
+                class="btn btn-sm rounded-0"
+                (click)="onRemoveFromWishlist(item)"
+                [title]="'COMMON.REMOVE' | translate"
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+
+          <!-- Show more indicator -->
+          <div *ngIf="wishlistItems().length > 3" class="text-center mt-2">
+            <small class="text-muted">
+              ...
+              {{
+                "PROFILE.MORE_ORDERS"
+                  | translate : { count: wishlistItems().length - 3 }
+              }}
+            </small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Orders -->
+      <div class="wishlist-section">
+        <div class="wishlist-header">
+          <h2>{{ "PROFILE.RECENT_ORDERS" | translate }}</h2>
+          <button
+            type="button"
+            class="view-all-link"
+            (click)="onViewAllOrders()"
+            *ngIf="hasOrders"
+          >
+            {{ "PROFILE.VIEW_ALL" | translate }}
+          </button>
+        </div>
+        <div class="wishlist-content">
+          <!-- Loading state -->
+          <div *ngIf="isLoadingOrders()" class="text-center p-3">
+            <div class="spinner-border spinner-border-sm" role="status">
+              <span class="visually-hidden">{{
+                "COMMON.LOADING" | translate
+              }}</span>
+            </div>
+            <span class="ms-2">Loading orders...</span>
+          </div>
+
+          <!-- No orders state -->
+          <div
+            *ngIf="!isLoadingOrders() && !hasOrders"
+            class="text-center p-3 text-muted"
+          >
+            <p>{{ "PROFILE.NO_ORDERS" | translate }}</p>
+            <p class="small">
+              {{ "PROFILE.ORDER_HISTORY_DESC" | translate }}
+            </p>
+          </div>
+
+          <!-- Recent orders -->
+          <div *ngFor="let order of recentOrders" class="wishlist-item mb-2">
+            <div class="product-image">
+              <div
+                class="bg-light rounded d-flex align-items-center justify-content-center"
+                style="width: 100%; height: 100%; font-size: 12px"
+              >
+                #{{ order.orderNumber.slice(-4) }}
+              </div>
+            </div>
+            <div class="product-info flex-grow-1">
+              <div class="product-name font-weight-bold">
+                {{ "PROFILE.ORDER_NUMBER" | translate }} #{{
+                  order.orderNumber
+                }}
+              </div>
+              <div class="product-pricing">
+                <span class="current-price">{{
+                  formatPrice(order.totalAmount, order.currency)
+                }}</span>
+              </div>
+              <div class="order-meta">
+                <small class="text-muted">{{
+                  formatOrderDate(order.orderDate)
+                }}</small>
+                <span
+                  class="ms-2"
+                  [class]="getOrderStatusClass(order.orderStatus)"
+                >
+                  {{ order.orderStatus }}
+                </span>
+              </div>
+              <div class="order-items-count">
+                <small class="text-muted">
+                  {{ order.orderItems.length }}
+                  {{
+                    order.orderItems.length !== 1
+                      ? ("PROFILE.ITEMS" | translate)
+                      : ("PROFILE.ITEM" | translate)
+                  }}
+                </small>
+              </div>
+            </div>
+            <div class="product-actions">
+              <button
+                type="button"
+                class="btn btn-sm add-new-button rounded-0"
+                (click)="onViewOrder(order.id)"
+                [title]="'COMMON.VIEW' | translate"
+              >
+                {{ "COMMON.VIEW" | translate }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Show more indicator -->
+          <div *ngIf="orders().length > 3" class="text-center mt-2">
+            <small class="text-muted">
+              ...
+              {{
+                "PROFILE.MORE_ORDERS"
+                  | translate : { count: orders().length - 3 }
+              }}
+            </small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Logout -->
+      <div class="logout-section">
+        <button type="button" class="logout-button" (click)="onLogout()">
+          {{ "PROFILE.LOG_OUT" | translate }} <span class="arrow">→</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- =================== BOOTSTRAP MODALS =================== -->
+
+<!-- Edit Profile Modal -->
+<div
+  class="modal fade"
+  id="editProfileModal"
+  tabindex="-1"
+  aria-labelledby="editProfileModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editProfileModalLabel">
+          {{ "PROFILE.EDIT_PROFILE" | translate }}
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          [attr.aria-label]="'COMMON.CLOSE' | translate"
+        ></button>
+      </div>
+      <form
+        [formGroup]="editProfileForm"
+        (ngSubmit)="$event.preventDefault(); onSaveProfile()"
+      >
+        <div class="modal-body">
+          <!-- General Error Display -->
+          <div *ngIf="hasFormError('general')" class="alert alert-danger">
+            {{ getFormError("general") }}
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label"
+                >{{ "PROFILE.FIRST_NAME" | translate }} *</label
+              >
+              <input
+                class="form-control"
+                formControlName="firstName"
+                [placeholder]="'REGISTER.FIRST_NAME_PLACEHOLDER' | translate"
+                [class.is-invalid]="
+                  isFieldInvalid(editProfileForm, 'firstName')
+                "
+              />
+              <div
+                *ngIf="isFieldInvalid(editProfileForm, 'firstName')"
+                class="invalid-feedback"
+              >
+                {{ getFieldError(editProfileForm, "firstName") }}
+              </div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label"
+                >{{ "PROFILE.LAST_NAME" | translate }} *</label
+              >
+              <input
+                class="form-control"
+                formControlName="lastName"
+                [placeholder]="'REGISTER.LAST_NAME_PLACEHOLDER' | translate"
+                [class.is-invalid]="isFieldInvalid(editProfileForm, 'lastName')"
+              />
+              <div
+                *ngIf="isFieldInvalid(editProfileForm, 'lastName')"
+                class="invalid-feedback"
+              >
+                {{ getFieldError(editProfileForm, "lastName") }}
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label"
+                >{{ "LOGIN.EMAIL" | translate }} *</label
+              >
+              <input
+                type="email"
+                class="form-control"
+                formControlName="email"
+                [placeholder]="'LOGIN.EMAIL_PLACEHOLDER' | translate"
+                [class.is-invalid]="isFieldInvalid(editProfileForm, 'email')"
+              />
+              <div
+                *ngIf="isFieldInvalid(editProfileForm, 'email')"
+                class="invalid-feedback"
+              >
+                {{ getFieldError(editProfileForm, "email") }}
+              </div>
+            </div>
+            <!-- Conditional Phone Number Field - Only show if user doesn't have phone -->
+            <div class="col-md-6 mb-3" *ngIf="!hasPhoneNumber">
+              <label class="form-label"
+                >{{ "PROFILE.PHONE_NUMBER" | translate }} *</label
+              >
+              <input
+                type="tel"
+                class="form-control"
+                formControlName="phone"
+                [placeholder]="'REGISTER.PHONE_PLACEHOLDER' | translate"
+                [class.is-invalid]="isFieldInvalid(editProfileForm, 'phone')"
+              />
+              <div
+                *ngIf="isFieldInvalid(editProfileForm, 'phone')"
+                class="invalid-feedback"
+              >
+                {{ getFieldError(editProfileForm, "phone") }}
+              </div>
+              <div class="form-text">
+                {{ "PROFILE.INCLUDE_COUNTRY_CODE" | translate }}
+              </div>
+            </div>
+            <!-- Empty column if user has phone number -->
+            <div class="col-md-6 mb-3" *ngIf="hasPhoneNumber">
+              <!-- Empty space to maintain layout -->
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">{{
+                "PROFILE.DATE_OF_BIRTH" | translate
+              }}</label>
+              <input
+                type="date"
+                class="form-control"
+                formControlName="dateOfBirth"
+              />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">{{
+                "PROFILE.GENDER" | translate
+              }}</label>
+              <select class="form-select" formControlName="gender">
+                <option value="">
+                  {{ "PROFILE.SELECT_GENDER" | translate }}
+                </option>
+                <option value="1">{{ "PROFILE.MALE" | translate }}</option>
+                <option value="0">{{ "PROFILE.FEMALE" | translate }}</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">{{
+              "PROFILE.PREFERRED_LANGUAGE" | translate
+            }}</label>
+            <select class="form-select" formControlName="preferredLanguage">
+              <option value="">
+                {{ "PROFILE.SELECT_LANGUAGE" | translate }}
+              </option>
+              <option value="English">
+                {{ "PROFILE.ENGLISH" | translate }}
+              </option>
+              <option value="Arabic">{{ "PROFILE.ARABIC" | translate }}</option>
+              <option value="French">{{ "PROFILE.FRENCH" | translate }}</option>
+              <option value="Spanish">
+                {{ "PROFILE.SPANISH" | translate }}
+              </option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-outline-secondary"
+            data-bs-dismiss="modal"
+          >
+            {{ "PROFILE.CANCEL" | translate }}
+          </button>
+          <button
+            type="submit"
+            class="btn btn-dark"
+            [disabled]="!editProfileForm.valid || isLoadingCustomer()"
+          >
+            <span
+              *ngIf="isLoadingCustomer()"
+              class="spinner-border spinner-border-sm me-2"
+              role="status"
+            ></span>
+            {{
+              isLoadingCustomer()
+                ? ("PROFILE.SAVING" | translate)
+                : ("PROFILE.SAVE_CHANGES" | translate)
+            }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Add/Update Mobile Modal -->
+<div class="modal fade" id="addMobileModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          {{
+            customerPhone
+              ? ("PROFILE.UPDATE_MOBILE" | translate)
+              : ("PROFILE.ADD_MOBILE" | translate)
+          }}
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          [attr.aria-label]="'COMMON.CLOSE' | translate"
+        ></button>
+      </div>
+      <form
+        [formGroup]="addMobileForm"
+        (ngSubmit)="$event.preventDefault(); onSaveMobileNumber()"
+      >
+        <div class="modal-body">
+          <!-- Error Display -->
+          <div *ngIf="hasFormError('phone')" class="alert alert-danger">
+            {{ getFormError("phone") }}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label"
+              >{{ "PROFILE.PHONE_NUMBER" | translate }} *</label
+            >
+            <input
+              type="tel"
+              class="form-control"
+              formControlName="phone"
+              [placeholder]="'REGISTER.PHONE_PLACEHOLDER' | translate"
+              [class.is-invalid]="isFieldInvalid(addMobileForm, 'phone')"
+            />
+            <div
+              *ngIf="isFieldInvalid(addMobileForm, 'phone')"
+              class="invalid-feedback"
+            >
+              {{ getFieldError(addMobileForm, "phone") }}
+            </div>
+            <div class="form-text">
+              {{ "PROFILE.INCLUDE_COUNTRY_CODE" | translate }}
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-outline-secondary"
+            data-bs-dismiss="modal"
+          >
+            {{ "PROFILE.CANCEL" | translate }}
+          </button>
+          <button
+            type="submit"
+            class="btn btn-dark"
+            [disabled]="!addMobileForm.valid || isLoadingCustomer()"
+          >
+            <span
+              *ngIf="isLoadingCustomer()"
+              class="spinner-border spinner-border-sm me-2"
+              role="status"
+            ></span>
+            {{
+              isLoadingCustomer()
+                ? ("PROFILE.SAVING" | translate)
+                : ("PROFILE.SAVE_NUMBER" | translate)
+            }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Address Modal -->
+<div class="modal fade" id="addressModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          {{
+            isEditingAddress
+              ? ("PROFILE.EDIT_ADDRESS" | translate)
+              : ("PROFILE.ADD_NEW_ADDRESS" | translate)
+          }}
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          [attr.aria-label]="'COMMON.CLOSE' | translate"
+        ></button>
+      </div>
+      <form
+        [formGroup]="addressForm"
+        (ngSubmit)="
+          $event.preventDefault();
+          isEditingAddress ? onUpdateAddress() : onSaveAddress()
+        "
+      >
+        <div class="modal-body">
+          <!-- Error Display -->
+          <div *ngIf="hasFormError('address')" class="alert alert-danger">
+            {{ getFormError("address") }}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label"
+              >{{ "PROFILE.ADDRESS_LINE1" | translate }} *</label
+            >
+            <input
+              class="form-control"
+              formControlName="addressLine1"
+              [placeholder]="'PROFILE.STREET_ADDRESS_PLACEHOLDER' | translate"
+              [class.is-invalid]="isFieldInvalid(addressForm, 'addressLine1')"
+            />
+            <div
+              *ngIf="isFieldInvalid(addressForm, 'addressLine1')"
+              class="invalid-feedback"
+            >
+              {{ getFieldError(addressForm, "addressLine1") }}
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">{{
+              "PROFILE.ADDRESS_LINE2" | translate
+            }}</label>
+            <input
+              class="form-control"
+              formControlName="addressLine2"
+              [placeholder]="'PROFILE.APARTMENT_PLACEHOLDER' | translate"
+            />
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label"
+                >{{ "PROFILE.CITY" | translate }} *</label
+              >
+              <input
+                class="form-control"
+                formControlName="city"
+                [placeholder]="'PROFILE.CITY' | translate"
+                [class.is-invalid]="isFieldInvalid(addressForm, 'city')"
+              />
+              <div
+                *ngIf="isFieldInvalid(addressForm, 'city')"
+                class="invalid-feedback"
+              >
+                {{ getFieldError(addressForm, "city") }}
+              </div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label"
+                >{{ "PROFILE.STATE" | translate }} *</label
+              >
+              <input
+                class="form-control"
+                formControlName="state"
+                [placeholder]="'PROFILE.STATE' | translate"
+                [class.is-invalid]="isFieldInvalid(addressForm, 'state')"
+              />
+              <div
+                *ngIf="isFieldInvalid(addressForm, 'state')"
+                class="invalid-feedback"
+              >
+                {{ getFieldError(addressForm, "state") }}
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label"
+                >{{ "PROFILE.ZIP_CODE" | translate }} *</label
+              >
+              <input
+                class="form-control"
+                formControlName="zipCode"
+                [placeholder]="'PROFILE.ZIP_CODE' | translate"
+                [class.is-invalid]="isFieldInvalid(addressForm, 'zipCode')"
+              />
+              <div
+                *ngIf="isFieldInvalid(addressForm, 'zipCode')"
+                class="invalid-feedback"
+              >
+                {{ getFieldError(addressForm, "zipCode") }}
+              </div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label"
+                >{{ "PROFILE.COUNTRY" | translate }} *</label
+              >
+              <input
+                class="form-control"
+                formControlName="country"
+                [placeholder]="'PROFILE.COUNTRY' | translate"
+                [class.is-invalid]="isFieldInvalid(addressForm, 'country')"
+              />
+              <div
+                *ngIf="isFieldInvalid(addressForm, 'country')"
+                class="invalid-feedback"
+              >
+                {{ getFieldError(addressForm, "country") }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Conditional Phone Number Field - Only show if user doesn't have phone -->
+          <div class="mb-3" *ngIf="!hasPhoneNumber">
+            <label class="form-label"
+              >{{ "PROFILE.PHONE_NUMBER" | translate }} *</label
+            >
+            <input
+              type="tel"
+              class="form-control"
+              formControlName="phoneNumber"
+              [placeholder]="'REGISTER.PHONE_PLACEHOLDER' | translate"
+              [class.is-invalid]="isFieldInvalid(addressForm, 'phoneNumber')"
+            />
+            <div
+              *ngIf="isFieldInvalid(addressForm, 'phoneNumber')"
+              class="invalid-feedback"
+            >
+              {{ getFieldError(addressForm, "phoneNumber") }}
+            </div>
+            <div class="form-text">
+              {{ "PROFILE.INCLUDE_COUNTRY_CODE" | translate }}
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">{{
+              "PROFILE.ADDRESS_TYPE" | translate
+            }}</label>
+            <select class="form-select" formControlName="addressType">
+              <option value="Home">{{ "PROFILE.HOME" | translate }}</option>
+              <option value="Work">{{ "PROFILE.WORK" | translate }}</option>
+              <option value="Other">{{ "PROFILE.OTHER" | translate }}</option>
+            </select>
+          </div>
+
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              formControlName="isDefault"
+              id="isDefaultAddress"
+            />
+            <label class="form-check-label" for="isDefaultAddress">
+              {{ "PROFILE.SET_DEFAULT_ADDRESS" | translate }}
+            </label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-outline-secondary"
+            data-bs-dismiss="modal"
+          >
+            {{ "PROFILE.CANCEL" | translate }}
+          </button>
+          <button
+            type="submit"
+            class="btn btn-dark"
+            [disabled]="!addressForm.valid || isLoadingAddresses()"
+          >
+            <span
+              *ngIf="isLoadingAddresses()"
+              class="spinner-border spinner-border-sm me-2"
+              role="status"
+            ></span>
+            {{
+              isLoadingAddresses()
+                ? ("PROFILE.SAVING" | translate)
+                : isEditingAddress
+                ? ("PROFILE.UPDATE_ADDRESS" | translate)
+                : ("PROFILE.ADD_ADDRESS" | translate)
+            }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Success Toast (Optional) -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+  <div
+    id="successToast"
+    class="toast"
+    role="alert"
+    aria-live="assertive"
+    aria-atomic="true"
+  >
+    <div class="toast-header">
+      <strong class="me-auto text-success">{{
+        "PROFILE.SUCCESS" | translate
+      }}</strong>
+      <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="toast"
+        [attr.aria-label]="'COMMON.CLOSE' | translate"
+      ></button>
+    </div>
+    <div class="toast-body">{{ "PROFILE.CHANGES_SAVED" | translate }}</div>
+  </div>
+</div>

@@ -1,0 +1,179 @@
+<!-- wishlist.component.html - Localized version -->
+<div class="container">
+  <!-- Wishlist Header -->
+  <div class="wishlist-header">
+    <div class="d-flex justify-content-between align-items-start">
+      <div>
+        <h1 class="wishlist-title">{{ "WISHLIST.TITLE" | translate }}</h1>
+        <p class="items-count">
+          {{ itemCount() }}
+          {{
+            itemCount() === 1
+              ? ("WISHLIST.ITEM" | translate)
+              : ("WISHLIST.ITEMS" | translate)
+          }}
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div *ngIf="isLoading()" class="loading-overlay">
+    <div class="loading-spinner-large">
+      <i class="fas fa-spinner fa-spin fa-2x"></i>
+    </div>
+  </div>
+
+  <!-- Wishlist Items Grid -->
+  <div *ngIf="!isEmpty()" class="wishlist-grid">
+    <div
+      *ngFor="let item of filteredItems(); trackBy: trackByItemId"
+      class="wishlist-item"
+      [class.selected]="isItemSelected(item.id)"
+      [class.unavailable]="!item.isAvailable"
+    >
+      <!-- Product Card -->
+      <div class="product-card">
+        <!-- Action Buttons Container - Fixed positioning and alignment -->
+        <div
+          class="action-buttons-container position-absolute w-100 d-flex justify-content-between align-items-center p-2"
+        >
+          <!-- Add to Cart Button -->
+          <button
+            type="button"
+            class="btn btn-action-cart d-flex justify-content-center align-items-center"
+            [disabled]="
+              !item.isAvailable || isLoading() || !hasAvailableVariants(item)
+            "
+            (click)="openVariantSelector(item, $event)"
+            [class.single-variant]="getAvailableVariantCount(item) === 1"
+            [title]="'WISHLIST.ADD_TO_CART' | translate"
+          >
+            <i *ngIf="!item.isAvailable" class="fas fa-ban"></i>
+            <img
+              *ngIf="item.isAvailable && !hasAvailableVariants(item)"
+              src="/Icons/add_to_cart.png"
+              alt=""
+              srcset=""
+            />
+            <img
+              *ngIf="item.isAvailable && hasAvailableVariants(item)"
+              src="/Icons/add_to_cart.png"
+              alt=""
+              srcset=""
+            />
+          </button>
+
+          <!-- Heart Icon Button -->
+          <button
+            type="button"
+            class="btn btn-action-heart d-flex justify-content-center align-items-center"
+            (click)="removeFromWishlist(item, $event)"
+            [title]="'WISHLIST.REMOVE' | translate"
+          >
+            <img src="/Icons/wishlist.svg" alt="" srcset="" />
+          </button>
+        </div>
+
+        <!-- Sale Badge -->
+        <div
+          *ngIf="
+            item.originalPrice &&
+            item.salePrice &&
+            item.salePrice < item.originalPrice
+          "
+          class="sale-badge position-absolute"
+        >
+          {{ "NAVBAR.SALE" | translate }}
+        </div>
+
+        <!-- Product Image -->
+        <div class="image-container" (click)="quickView(item)">
+          <img
+            [src]="item.imageUrl || '/assets/images/placeholder-product.jpg'"
+            [alt]="item.productName"
+            class="product-image img-fluid"
+            loading="lazy"
+          />
+
+          <!-- Unavailable Overlay -->
+          <div *ngIf="!item.isAvailable" class="unavailable-overlay">
+            <span class="unavailable-text">{{
+              "COMMON.UNAVAILABLE" | translate | uppercase
+            }}</span>
+          </div>
+        </div>
+
+        <!-- Product Info -->
+        <div class="product-info">
+          <h3 class="product-name" (click)="quickView(item)">
+            {{ item.productName }}
+          </h3>
+
+          <div class="price-section d-flex align-items-center flex-wrap">
+            <span class="product-price me-2">{{
+              formatPrice(item.price)
+            }}</span>
+            <span
+              *ngIf="
+                item.originalPrice &&
+                item.salePrice &&
+                item.salePrice < item.originalPrice
+              "
+              class="original-price text-decoration-line-through text-muted"
+            >
+              {{ formatPrice(item.originalPrice) }}
+            </span>
+          </div>
+
+          <!-- Stock Status -->
+          <div class="stock-status" *ngIf="!item.isAvailable">
+            <span class="stock-badge out-of-stock">
+              {{ "WISHLIST.STOCK.OUT_OF_STOCK" | translate }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty Wishlist State -->
+  <div *ngIf="isEmpty()" class="empty-wishlist text-center">
+    <div class="empty-content mx-auto">
+      <div class="empty-icon">
+        <i class="far fa-heart"></i>
+      </div>
+      <h2 class="empty-title">{{ "WISHLIST.EMPTY.TITLE" | translate }}</h2>
+      <p class="empty-description">
+        {{ "WISHLIST.EMPTY.DESCRIPTION" | translate }}
+      </p>
+      <div class="empty-actions">
+        <button
+          class="btn btn-shop-now border border-1 rounded-0 border-black"
+          (click)="navigateToShopping()"
+        >
+          <i class="fas fa-shopping-bag me-2"></i>
+          {{ "WISHLIST.EMPTY.SHOP_NOW" | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Back to Account Section -->
+  <div class="back-section text-center">
+    <button class="btn btn-back" (click)="navigateToAccount()">
+      <i class="fas fa-arrow-left me-2"></i>
+      {{ "WISHLIST.BACK_TO_ACCOUNT" | translate }}
+    </button>
+  </div>
+</div>
+
+<!-- Enhanced Variant Selector Component -->
+<app-variant-selector
+  [product]="selectedProduct"
+  [isOpen]="showVariantSelector"
+  (closed)="onVariantSelectorClose()"
+  (added)="onVariantAdded($event)"
+></app-variant-selector>
+
+<!-- Note: Local toast component removed - Global toast in main layout will handle all notifications -->

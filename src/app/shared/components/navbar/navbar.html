@@ -546,25 +546,3 @@
     </div>
   </div>
 </nav>
-<!-- School promotion banner with close functionality -->
-<div
-  class="promo-banner bg-light d-none d-md-block banner-slide-down"
-  *ngIf="showPromoBanner"
->
-  <div class="container-fluid py-3">
-    <div class="row">
-      <div class="col-12 text-center position-relative">
-        <span class="small">{{ "NAVBAR.SCHOOL_PROMO" | translate }} </span>
-        <a href="#" class="text-decoration-underline fw-bold small">
-          {{ "NAVBAR.SHOP_NOW" | translate }}
-        </a>
-        <button
-          type="button"
-          class="btn-close position-absolute end-0 top-50 translate-middle-y me-3"
-          aria-label="Close"
-          (click)="closePromoBanner()"
-        ></button>
-      </div>
-    </div>
-  </div>
-</div>

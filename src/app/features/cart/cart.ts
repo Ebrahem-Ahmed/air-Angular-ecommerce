@@ -415,7 +415,7 @@ export class Cart implements OnInit, OnDestroy {
     const img = event.target as HTMLImageElement;
     this.toastService.error('Error loading image, using placeholder');
     img.src =
-      'https://images.unsplash.com/photo-1549298916-b41d501d3772?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&q=80';
+                  '/Icons/info.jpg'
   }
 
   // PRIVATE HELPER METHODS

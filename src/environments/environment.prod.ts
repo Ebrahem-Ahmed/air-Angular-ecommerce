@@ -4,7 +4,7 @@ export const environment = {
   appName: 'MyApp',
   supportedLanguages: ['en', 'ar'],
   googleClientId:
-    '369992404580-eb4m2duc5raoe9h3q80cemp8goishmmn.apps.googleusercontent.com',
+    '1096473940686-509ctbkdp3b89cd4e2jelqe8av5ci7in.apps.googleusercontent.com',
   paypalClientId:
     'AX9QigpqqxA-mf7s97l88vh3ylgWR42mv8en1WnwB4TnYirF8MNdP0TjzkgKDk-4JsawgZTHLlpejd3L',
   paypalMode: 'sandbox',

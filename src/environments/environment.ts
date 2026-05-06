@@ -1,7 +1,7 @@
 export const environment = {
   production: false,
   apiUrl: 'https://aircomfortapi.runasp.net/api',
-//apiUrl: 'http://localhost:5001/api',
+//apiUrl: 'http://localhost:5001/apis',
   appName: 'MyApp',
   supportedLanguages: ['en', 'ar'],
   googleClientId:
